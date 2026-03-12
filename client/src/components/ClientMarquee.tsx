@@ -22,7 +22,7 @@ const ClientMarquee = () => {
       <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-edge-black to-transparent z-10 pointer-events-none"></div>
       
       {/* Container 1 */}
-      <div className="flex whitespace-nowrap animate-marquee min-w-full justify-around">
+      <div className="flex whitespace-nowrap animate-marquee min-w-full justify-around shrink-0">
         {clients.map((client, index) => (
           <div 
             key={`first-${index}`}
@@ -37,7 +37,7 @@ const ClientMarquee = () => {
       </div>
 
       {/* Container 2 (Clone for infinite loop effect) */}
-      <div className="flex whitespace-nowrap animate-marquee min-w-full justify-around">
+      <div className="flex whitespace-nowrap animate-marquee min-w-full justify-around shrink-0">
         {clients.map((client, index) => (
           <div 
             key={`second-${index}`}

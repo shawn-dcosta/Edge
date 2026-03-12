@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { ArrowRight, Star, Shield, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ClientMarquee from '../components/ClientMarquee';
@@ -11,10 +11,17 @@ const Home = () => {
     offset: ["start start", "end start"]
   });
 
+  // Smooth out the scroll progress to remove lag/jitter
+  const smoothScroll = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
   // Parallax effects
-  const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const opacityText = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const yText = useTransform(scrollYProgress, [0, 0.5], ["0%", "100%"]);
+  const yBg = useTransform(smoothScroll, [0, 1], ["0%", "50%"]);
+  const opacityText = useTransform(smoothScroll, [0, 0.5], [1, 0]);
+  const yText = useTransform(smoothScroll, [0, 0.5], ["0%", "100%"]);
 
   return (
     <div className="w-full">

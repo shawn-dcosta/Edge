@@ -6,6 +6,7 @@ import ClientMarquee from '../components/ClientMarquee';
 import AnimatedCounter from '../components/AnimatedCounter';
 import MagneticWrapper from '../components/MagneticWrapper';
 import TextReveal from '../components/TextReveal';
+import SectionReveal from '../components/SectionReveal';
 
 const Home = () => {
   const containerRef = useRef(null);
@@ -94,7 +95,9 @@ const Home = () => {
                viewport={{ once: true, margin: "-100px" }}
                transition={{ duration: 0.8 }}
              >
-               <h2 className="text-6xl font-black tracking-tighter mb-8 text-edge-black">OUR <span className="text-edge-red">PILLARS.</span></h2>
+               <SectionReveal>
+                 <h2 className="text-6xl font-black tracking-tighter mb-8 text-edge-black">OUR <span className="text-edge-red">PILLARS.</span></h2>
+               </SectionReveal>
                <p className="text-xl text-gray-500 mb-10 leading-relaxed font-light">
                  We do not believe in the 'One-Size-Fits-All' kind of event packages. At Edge productions, we act as strategic partners, working closely to deliver a customized and unique setup.
                </p>
@@ -192,7 +195,9 @@ const Home = () => {
              viewport={{ once: true }}
              className="text-center max-w-4xl mx-auto mb-20"
            >
-              <h2 className="text-5xl md:text-6xl font-black tracking-tighter mb-8 text-edge-black uppercase">Complete BTL Support</h2>
+              <SectionReveal>
+                <h2 className="text-5xl md:text-6xl font-black tracking-tighter mb-8 text-edge-black uppercase">Complete BTL Support</h2>
+              </SectionReveal>
               <div className="w-32 h-1 bg-edge-red mx-auto mb-8"></div>
               <p className="text-xl text-gray-500 font-light">From fresh creative concepts to intricate execution.</p>
            </motion.div>

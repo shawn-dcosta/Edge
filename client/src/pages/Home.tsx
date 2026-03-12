@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import ClientMarquee from '../components/ClientMarquee';
 import AnimatedCounter from '../components/AnimatedCounter';
 import MagneticWrapper from '../components/MagneticWrapper';
+import TextReveal from '../components/TextReveal';
 
 const Home = () => {
   const containerRef = useRef(null);
@@ -41,24 +42,17 @@ const Home = () => {
           style={{ opacity: opacityText, y: yText }} 
           className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-edge-white w-full"
         >
-             <motion.h2 
-               initial={{ opacity: 0, y: 20 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ duration: 0.8, delay: 0.2 }}
+             <TextReveal 
+               text="Edge to Edge Excellence"
                className="text-edge-red tracking-[0.4em] text-sm md:text-md font-bold uppercase mb-4"
-             >
-               Edge to Edge Excellence
-             </motion.h2>
-             <motion.h1 
-               initial={{ opacity: 0, y: 30 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ duration: 0.8, delay: 0.4 }}
-               className="text-6xl md:text-[8rem] font-black tracking-tighter leading-[0.9] mb-8 relative"
-             >
-               WE BUILD <br/>
-               <span className="text-edge-red drop-shadow-2xl">PARAMOUNT</span> <br/>
-               EXPERIENCES.
-             </motion.h1>
+               delay={0.2}
+             />
+             
+             <div className="text-6xl md:text-[8rem] font-black tracking-tighter leading-[0.9] mb-8 relative">
+               <TextReveal text="WE BUILD" delay={0.4} />
+               <TextReveal text="PARAMOUNT" delay={0.6} className="text-edge-red drop-shadow-2xl" />
+               <TextReveal text="EXPERIENCES." delay={0.8} />
+             </div>
              <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
                <motion.p 
                  initial={{ opacity: 0, y: 20 }}

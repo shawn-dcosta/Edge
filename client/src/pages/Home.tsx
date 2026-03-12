@@ -4,6 +4,7 @@ import { ArrowRight, Star, Shield, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ClientMarquee from '../components/ClientMarquee';
 import AnimatedCounter from '../components/AnimatedCounter';
+import MagneticWrapper from '../components/MagneticWrapper';
 
 const Home = () => {
   const containerRef = useRef(null);
@@ -72,13 +73,15 @@ const Home = () => {
                  animate={{ opacity: 1, scale: 1 }}
                  transition={{ duration: 0.8, delay: 0.8 }}
                >
-                 <Link 
-                   to="/portfolio" 
-                   className="inline-flex items-center px-10 py-5 bg-edge-red text-white font-bold tracking-widest uppercase hover:bg-white hover:text-edge-red transition-all duration-500 rounded-none shadow-[0_0_40px_-5px_rgba(211,18,18,0.5)] hover:shadow-none translate-y-0 hover:-translate-y-1"
-                 >
-                    Our Work
-                    <ArrowRight className="ml-4" size={24} />
-                 </Link>
+                 <MagneticWrapper strength={0.3}>
+                   <Link 
+                     to="/portfolio" 
+                     className="inline-flex items-center px-10 py-5 bg-edge-red text-white font-bold tracking-widest uppercase hover:bg-white hover:text-edge-red transition-all duration-500 rounded-none shadow-[0_0_40px_-5px_rgba(211,18,18,0.5)] hover:shadow-none translate-y-0 hover:-translate-y-1"
+                   >
+                      Our Work
+                      <ArrowRight className="ml-4" size={24} />
+                   </Link>
+                 </MagneticWrapper>
                </motion.div>
              </div>
         </motion.div>
@@ -202,22 +205,23 @@ const Home = () => {
 
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {['In house Production', 'Stage Setup & Construction', 'Events & Special Events', 'Retail Merchandising'].map((expertise, idx) => (
-                <motion.div 
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1, duration: 0.5 }}
-                  key={idx} 
-                  className="bg-edge-white p-12 flex flex-col items-center justify-center text-center group hover:-translate-y-4 transition-transform duration-500 border-b-[6px] border-transparent hover:border-edge-red shadow-sm hover:shadow-2xl relative overflow-hidden"
-                >
-                   <div className="absolute -right-6 -top-6 text-[10rem] font-black text-gray-50 opacity-50 group-hover:text-edge-red/5 group-hover:scale-110 transition-all duration-500 pointer-events-none">
-                     0{idx + 1}
-                   </div>
-                   <div className="w-20 h-20 bg-edge-gray flex items-center justify-center mb-8 text-3xl font-black text-edge-red relative z-10 shadow-inner group-hover:bg-edge-red group-hover:text-white transition-colors duration-500">
-                     {idx + 1}
-                   </div>
-                   <h3 className="text-xl font-bold tracking-widest uppercase text-edge-black relative z-10 leading-snug">{expertise}</h3>
-                </motion.div>
+                <MagneticWrapper key={idx} strength={0.15}>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1, duration: 0.5 }}
+                    className="bg-edge-white p-12 h-full flex flex-col items-center justify-center text-center group hover:-translate-y-4 transition-transform duration-500 border-b-[6px] border-transparent hover:border-edge-red shadow-sm hover:shadow-2xl relative overflow-hidden"
+                  >
+                     <div className="absolute -right-6 -top-6 text-[10rem] font-black text-gray-50 opacity-50 group-hover:text-edge-red/5 group-hover:scale-110 transition-all duration-500 pointer-events-none">
+                       0{idx + 1}
+                     </div>
+                     <div className="w-20 h-20 bg-edge-gray flex items-center justify-center mb-8 text-3xl font-black text-edge-red relative z-10 shadow-inner group-hover:bg-edge-red group-hover:text-white transition-colors duration-500">
+                       {idx + 1}
+                     </div>
+                     <h3 className="text-xl font-bold tracking-widest uppercase text-edge-black relative z-10 leading-snug">{expertise}</h3>
+                  </motion.div>
+                </MagneticWrapper>
               ))}
            </div>
         </div>

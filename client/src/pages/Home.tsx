@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { ArrowRight, Star, Shield, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ClientMarquee from '../components/ClientMarquee';
+import AnimatedCounter from '../components/AnimatedCounter';
 
 const Home = () => {
   const containerRef = useRef(null);
@@ -144,6 +145,43 @@ const Home = () => {
                  <div className="absolute inset-0 border-[16px] border-edge-white/10 z-10 m-8"></div>
                  <h3 className="relative z-10 text-8xl font-black text-edge-white opacity-20 transform -rotate-90 origin-center whitespace-nowrap mix-blend-overlay tracking-tighter">ATTENTION TO DETAIL</h3>
              </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Portfolio Hook / Stats Section */}
+      <section className="py-32 bg-edge-black text-edge-white overflow-hidden relative">
+        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-edge-red rounded-full blur-[120px]"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-edge-red rounded-full blur-[100px]"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+            <div>
+              <div className="text-5xl md:text-7xl font-black mb-2 text-edge-red">
+                <AnimatedCounter value={54} />+
+              </div>
+              <p className="text-gray-400 uppercase tracking-widest text-xs font-bold">Stores Managed</p>
+            </div>
+            <div>
+              <div className="text-5xl md:text-7xl font-black mb-2">
+                <AnimatedCounter value={24} />
+              </div>
+              <p className="text-gray-400 uppercase tracking-widest text-xs font-bold">Cities Reached</p>
+            </div>
+            <div>
+              <div className="text-5xl md:text-7xl font-black mb-2">
+                <AnimatedCounter value={15} />+
+              </div>
+              <p className="text-gray-400 uppercase tracking-widest text-xs font-bold">Years of Edge</p>
+            </div>
+            <div>
+              <div className="text-5xl md:text-7xl font-black mb-2">
+                <AnimatedCounter value={500} />+
+              </div>
+              <p className="text-gray-400 uppercase tracking-widest text-xs font-bold">Events Executed</p>
+            </div>
           </div>
         </div>
       </section>

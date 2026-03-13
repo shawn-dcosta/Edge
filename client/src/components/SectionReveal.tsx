@@ -12,13 +12,14 @@ const SectionReveal = ({ children, delay = 0, width = "100%" }: SectionRevealPro
     <div style={{ position: "relative", width, overflow: "hidden" }}>
       <motion.div
         variants={{
-          hidden: { opacity: 0, y: 75 },
-          visible: { opacity: 1, y: 0 },
+          hidden: { opacity: 0 },
+          visible: { opacity: 1 },
         }}
         initial="hidden"
         whileInView="visible"
         transition={{ duration: 0.5, delay }}
         viewport={{ once: true }}
+        style={{ position: "relative" }}
       >
         {children}
       </motion.div>
@@ -33,8 +34,8 @@ const SectionReveal = ({ children, delay = 0, width = "100%" }: SectionRevealPro
         viewport={{ once: true }}
         style={{
           position: "absolute",
-          top: 4,
-          bottom: 4,
+          top: -1,
+          bottom: -1,
           left: 0,
           right: 0,
           background: "#D31212", // edge-red

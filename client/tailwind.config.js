@@ -18,7 +18,7 @@ export default {
         sans: ['Inter', 'sans-serif'],
       },
       animation: {
-        'marquee': 'marquee 10s linear infinite',
+        'marquee': 'marquee 15s linear infinite',
       },
       keyframes: {
         marquee: {

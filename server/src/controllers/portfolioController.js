@@ -21,7 +21,7 @@ export const getPortfolioItemsByCategory = async (req, res) => {
 
 export const createPortfolioItem = async (req, res) => {
   try {
-    const { title, category, imageUrl, description } = req.body;
+    const { title, category, imageUrl, images, description } = req.body;
     
     if (!title || !category || !imageUrl) {
       return res.status(400).json({ message: 'Missing required fields' });
@@ -31,6 +31,7 @@ export const createPortfolioItem = async (req, res) => {
       title,
       category,
       imageUrl,
+      images,
       description
     });
 

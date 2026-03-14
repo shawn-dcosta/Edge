@@ -14,7 +14,14 @@ const AdminDashboard = () => {
   const [inquiries, setInquiries] = useState<any[]>([]);
   
   // New Item Form State
-  const [newItem, setNewItem] = useState({ title: '', category: CATEGORIES[0], imageUrl: '', description: '' });
+  const [newItem, setNewItem] = useState({ 
+    title: '', 
+    category: CATEGORIES[0], 
+    imageUrl: '', 
+    images: [] as string[],
+    description: '' 
+  });
+  const [imagesInput, setImagesInput] = useState(''); // Temp state for comma-separated URLs
 
   useEffect(() => {
     fetchData();
@@ -37,8 +44,20 @@ const AdminDashboard = () => {
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/portfolio', newItem);
-      setNewItem({ title: '', category: CATEGORIES[0], imageUrl: '', description: '' });
+      // Process imagesInput into an array
+      const imagesArray = imagesInput
+        .split(',')
+        .map(url => url.trim())
+        .filter(url => url !== '');
+      
+      const itemToSave = {
+        ...newItem,
+        images: [newItem.imageUrl, ...imagesArray] // Ensure hero image is first
+      };
+
+      await axios.post('http://localhost:5000/api/portfolio', itemToSave);
+      setNewItem({ title: '', category: CATEGORIES[0], imageUrl: '', images: [], description: '' });
+      setImagesInput('');
       fetchData();
     } catch (err) {
       console.error('Failed to add item');
@@ -97,8 +116,21 @@ const AdminDashboard = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold tracking-widest text-gray-500 uppercase mb-1">Image URL</label>
+                    <label className="block text-xs font-bold tracking-widest text-gray-500 uppercase mb-1">Thumbnail (Hero) URL</label>
                     <input required type="text" value={newItem.imageUrl} onChange={e => setNewItem({...newItem, imageUrl: e.target.value})} className="w-full bg-edge-gray p-3 outline-none focus:border-edge-red border-b-2 border-transparent" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold tracking-widest text-gray-500 uppercase mb-1">Additional Gallery URLs (Comma Separated)</label>
+                    <textarea 
+                      value={imagesInput} 
+                      onChange={e => setImagesInput(e.target.value)} 
+                      placeholder="url1.jpg, url2.jpg..."
+                      className="w-full bg-edge-gray p-3 outline-none focus:border-edge-red border-b-2 border-transparent h-24 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold tracking-widest text-gray-500 uppercase mb-1">Description</label>
+                    <textarea value={newItem.description} onChange={e => setNewItem({...newItem, description: e.target.value})} className="w-full bg-edge-gray p-3 outline-none focus:border-edge-red border-b-2 border-transparent h-20 text-sm" />
                   </div>
                   <button type="submit" className="w-full bg-edge-red text-white font-bold uppercase py-3 mt-4 hover:bg-edge-black transition-colors flex justify-center items-center">
                     <Plus size={18} className="mr-2" /> Add to Portfolio

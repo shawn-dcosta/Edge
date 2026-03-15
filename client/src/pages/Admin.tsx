@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Trash2, Plus, Mail } from 'lucide-react';
+import { Trash2, Plus, Mail, LogOut, ShieldCheck } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const CATEGORIES = [
   'Award Functions', 'Exhibitions', 'Corporate Events', 
@@ -15,6 +16,7 @@ declare global {
 }
 
 const AdminDashboard = () => {
+  const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<'portfolio' | 'inquiries'>('portfolio');
   const [portfolio, setPortfolio] = useState<any[]>([]);
   const [inquiries, setInquiries] = useState<any[]>([]);
@@ -128,11 +130,13 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="w-full bg-edge-gray min-h-screen py-12">
+    <div className="w-full bg-edge-gray min-h-screen pt-32 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-black mb-8 uppercase tracking-widest text-edge-black">
-          Admin <span className="text-edge-red">Portal</span>
-        </h1>
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6 border-b border-black/5 pb-8">
+          <h1 className="text-4xl font-black uppercase tracking-widest text-edge-black">
+            Admin <span className="text-edge-red">Portal</span>
+          </h1>
+        </div>
 
         {/* Tabs */}
         <div className="flex space-x-4 mb-8">

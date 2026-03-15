@@ -1,21 +1,40 @@
+import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import dotenv from 'dotenv';
 
+import session from 'express-session';
+import passport from './config/passport.js';
 import portfolioRoutes from './routes/portfolioRoutes.js';
 import inquiryRoutes from './routes/inquiryRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.json());
 
+// Session & Passport
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'edge_secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Set to true if using HTTPS
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/inquiry', inquiryRoutes);
 

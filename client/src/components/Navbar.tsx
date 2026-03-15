@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
+  const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
@@ -17,8 +19,9 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Determine if we need a transparent navbar initially (e.g. on Home page hero section)
-  const isTransparentInitially = location.pathname === '/' && !scrolled;
+  // Determine if we need a transparent navbar initially
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  const isTransparentInitially = (location.pathname === '/' || isAuthPage) && !scrolled;
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -60,6 +63,20 @@ const Navbar = () => {
                 <span className={`absolute bottom-0 left-0 w-full h-[2px] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ${isTransparentInitially ? 'bg-white' : 'bg-edge-red'}`}></span>
               </Link>
             ))}
+            
+            {user && (
+              <button
+                onClick={logout}
+                className={`flex items-center space-x-2 font-black text-[10px] tracking-[0.2em] uppercase transition-all duration-300 px-5 py-2.5 border rounded-full ${
+                  isTransparentInitially 
+                    ? 'text-white border-white/20 hover:bg-white hover:text-edge-black' 
+                    : 'text-edge-black border-edge-black/10 hover:bg-edge-black hover:text-white'
+                }`}
+              >
+                <span>Logout</span>
+                <LogOut size={12} />
+              </button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -76,18 +93,37 @@ const Navbar = () => {
 
       {/* Mobile Menu Dropdown */}
       {isOpen && (
-        <div className="md:hidden bg-edge-white border-b border-gray-100 absolute w-full shadow-2xl origin-top animate-in slide-in-from-top-4 fade-in">
+        <div className={`md:hidden border-b border-gray-100 absolute w-full shadow-2xl origin-top animate-in slide-in-from-top-4 fade-in ${
+          isAuthPage ? 'bg-edge-black border-white/10' : 'bg-edge-white border-gray-100'
+        }`}>
           <div className="px-6 pt-4 pb-8 space-y-4">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
                 onClick={() => setIsOpen(false)}
-                className="block py-3 text-lg font-black text-edge-black uppercase tracking-widest border-b border-gray-100 last:border-0 hover:text-edge-red hover:translate-x-2 transition-all duration-300"
+                className={`block py-3 text-lg font-black uppercase tracking-widest border-b last:border-0 hover:translate-x-2 transition-all duration-300 ${
+                  isAuthPage ? 'text-white border-white/5 hover:text-edge-red' : 'text-edge-black border-gray-100 hover:text-edge-red'
+                }`}
               >
                 {link.name}
               </Link>
             ))}
+            
+            {user && (
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  logout();
+                }}
+                className={`w-full flex items-center justify-between py-5 px-2 text-xl font-black uppercase tracking-widest border-t transition-all duration-300 ${
+                  isAuthPage ? 'text-edge-red border-white/10' : 'text-edge-red border-gray-100'
+                }`}
+              >
+                Logout
+                <LogOut size={24} />
+              </button>
+            )}
           </div>
         </div>
       )}

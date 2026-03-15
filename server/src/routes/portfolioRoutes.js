@@ -1,16 +1,17 @@
 import { Router } from 'express';
-import { 
-  getPortfolioItems, 
-  getPortfolioItemsByCategory, 
-  createPortfolioItem, 
-  deletePortfolioItem 
+import {
+  getPortfolioItems,
+  getPortfolioItemsByCategory,
+  createPortfolioItem,
+  deletePortfolioItem
 } from '../controllers/portfolioController.js';
+import { adminOnly } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
 router.get('/', getPortfolioItems);
 router.get('/category/:category', getPortfolioItemsByCategory);
-router.post('/', createPortfolioItem);
-router.delete('/:id', deletePortfolioItem);
+router.post('/', adminOnly, createPortfolioItem);
+router.delete('/:id', adminOnly, deletePortfolioItem);
 
 export default router;

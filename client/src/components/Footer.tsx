@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Instagram, Facebook, Linkedin } from 'lucide-react';
+import logo from '../assets/Edge Logo (Without BG).png';
 
 const Footer = () => {
   return (
@@ -8,12 +9,11 @@ const Footer = () => {
         
         {/* Brand */}
         <div>
-          <h2 className="text-4xl font-black tracking-tighter mb-2">
-            EDGE
-          </h2>
-          <span className="text-edge-red block text-sm tracking-[0.3em] font-medium leading-tight mb-6">
-            PRODUCTIONS
-          </span>
+          <img 
+            src={logo} 
+            alt="Edge Productions" 
+            className="h-16 mb-6 brightness-0 invert object-contain"
+          />
           <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
             The most preferred Production House in India. We deliver out-of-the-box concepts and execute paramount event experiences.
           </p>

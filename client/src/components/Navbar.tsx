@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import logo from '../assets/Edge Logo (Without BG).png';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -41,11 +42,16 @@ const Navbar = () => {
           
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className={`text-3xl font-black tracking-tighter cursor-pointer transition-colors duration-500 ${isTransparentInitially ? 'text-edge-white' : 'text-edge-black'}`}>
-              EDGE
-              <span className={`block text-[10px] tracking-[0.3em] font-bold leading-tight transition-colors duration-500 ${isTransparentInitially ? 'text-edge-red/90' : 'text-edge-red'}`}>
-                PRODUCTIONS
-              </span>
+            <Link to="/" className="flex items-center group">
+              <img 
+                src={logo} 
+                alt="Edge Productions" 
+                className={`transition-all duration-500 object-contain ${
+                  scrolled ? 'h-12' : 'h-16'
+                } ${
+                  isTransparentInitially ? 'brightness-0 invert' : 'brightness-100'
+                }`} 
+              />
             </Link>
           </div>
 

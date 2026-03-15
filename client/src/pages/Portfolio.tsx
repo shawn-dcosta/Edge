@@ -37,47 +37,14 @@ const Portfolio = () => {
   
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Fallback data with multiple images
-  const fallbackData: PortfolioItem[] = [
-    { 
-      _id: '1', 
-      title: 'Leap of Faith - ET NOW', 
-      category: 'Televised Events', 
-      imageUrl: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2070&auto=format&fit=crop',
-      images: [
-        'https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2070&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2070&auto=format&fit=crop'
-      ],
-      description: "A high-octane televised event for ET NOW, featuring dynamic stage lighting and multi-camera choreography."
-    },
-    { 
-      _id: '2', 
-      title: 'VP Awards In Vogue', 
-      category: 'Award Functions', 
-      imageUrl: 'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?q=80&w=2070&auto=format&fit=crop',
-      images: [
-        'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?q=80&w=2070&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=2070&auto=format&fit=crop'
-      ]
-    },
-    { _id: '3', title: 'Dell Technologies Forum', category: 'Conferences', imageUrl: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=2012&auto=format&fit=crop' },
-    { _id: '4', title: 'Kiss Flow Exhibition', category: 'Exhibitions', imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop' },
-    { _id: '5', title: 'Grand Wedding Setup', category: 'Weddings', imageUrl: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=2070&auto=format&fit=crop' },
-    { _id: '6', title: 'Panasonic Retail Merchandising', category: 'Retail Merchandising', imageUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop' },
-  ];
-
   useEffect(() => {
     const fetchPortfolio = async () => {
       try {
         const res = await axios.get('http://localhost:5000/api/portfolio');
-        if (res.data && res.data.length > 0) {
-           setItems(res.data);
-        } else {
-           setItems(fallbackData);
-        }
+        setItems(res.data || []);
       } catch (error) {
-        setItems(fallbackData);
+        console.error('Failed to fetch portfolio', error);
+        setItems([]);
       } finally {
         setLoading(false);
       }

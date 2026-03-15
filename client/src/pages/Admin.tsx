@@ -8,6 +8,12 @@ const CATEGORIES = [
   'Televised Events', 'Mall Activity'
 ];
 
+declare global {
+  interface Window {
+    cloudinary: any;
+  }
+}
+
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<'portfolio' | 'inquiries'>('portfolio');
   const [portfolio, setPortfolio] = useState<any[]>([]);
@@ -21,11 +27,66 @@ const AdminDashboard = () => {
     images: [] as string[],
     description: '' 
   });
-  const [imagesInput, setImagesInput] = useState(''); // Temp state for comma-separated URLs
 
   useEffect(() => {
     fetchData();
   }, [activeTab]);
+
+  const handleUpload = () => {
+    const widget = window.cloudinary.createUploadWidget(
+      {
+        cloudName: 'dz2k26pwy',
+        uploadPreset: 'omuwxvbn',
+        sources: ['local', 'url', 'camera', 'google_drive'],
+        multiple: true,
+        styles: {
+          palette: {
+            window: "#FFFFFF",
+            windowBorder: "#90A0B3",
+            tabIcon: "#D31212",
+            menuIcons: "#5A616A",
+            textDark: "#000000",
+            textLight: "#FFFFFF",
+            link: "#D31212",
+            action: "#D31212",
+            inactiveTabIcon: "#0E2F5A",
+            error: "#F44235",
+            inProgress: "#D31212",
+            complete: "#20B832",
+            sourceBg: "#E4EBF1"
+          }
+        },
+        fonts: {
+          default: null,
+          "'Inter', sans-serif": {
+            url: "https://fonts.googleapis.com/css?family=Inter",
+            active: true
+          }
+        }
+      },
+      (error: any, result: any) => {
+        if (!error && result && result.event === "success") {
+          const uploadedUrl = result.info.secure_url;
+          
+          setNewItem(prev => {
+            // If it's the first image, make it the thumbnail too
+            if (!prev.imageUrl) {
+              return {
+                ...prev,
+                imageUrl: uploadedUrl,
+                images: [...prev.images, uploadedUrl]
+              };
+            }
+            return {
+              ...prev,
+              images: [...prev.images, uploadedUrl]
+            };
+          });
+        }
+      }
+    );
+    widget.open();
+  };
 
   const fetchData = async () => {
     try {
@@ -43,21 +104,13 @@ const AdminDashboard = () => {
 
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!newItem.imageUrl) {
+      alert("Please upload at least one image/video.");
+      return;
+    }
     try {
-      // Process imagesInput into an array
-      const imagesArray = imagesInput
-        .split(',')
-        .map(url => url.trim())
-        .filter(url => url !== '');
-      
-      const itemToSave = {
-        ...newItem,
-        images: [newItem.imageUrl, ...imagesArray] // Ensure hero image is first
-      };
-
-      await axios.post('http://localhost:5000/api/portfolio', itemToSave);
+      await axios.post('http://localhost:5000/api/portfolio', newItem);
       setNewItem({ title: '', category: CATEGORIES[0], imageUrl: '', images: [], description: '' });
-      setImagesInput('');
       fetchData();
     } catch (err) {
       console.error('Failed to add item');
@@ -115,18 +168,36 @@ const AdminDashboard = () => {
                        {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold tracking-widest text-gray-500 uppercase mb-1">Thumbnail (Hero) URL</label>
-                    <input required type="text" value={newItem.imageUrl} onChange={e => setNewItem({...newItem, imageUrl: e.target.value})} className="w-full bg-edge-gray p-3 outline-none focus:border-edge-red border-b-2 border-transparent" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold tracking-widest text-gray-500 uppercase mb-1">Additional Gallery URLs (Comma Separated)</label>
-                    <textarea 
-                      value={imagesInput} 
-                      onChange={e => setImagesInput(e.target.value)} 
-                      placeholder="url1.jpg, url2.jpg..."
-                      className="w-full bg-edge-gray p-3 outline-none focus:border-edge-red border-b-2 border-transparent h-24 text-sm"
-                    />
+                  <div className="bg-edge-gray p-6 border-2 border-dashed border-gray-200 text-center transition-colors hover:border-edge-red">
+                    <label className="block text-xs font-bold tracking-widest text-gray-500 uppercase mb-4 text-center">Project Media</label>
+                    
+                    <button 
+                      type="button"
+                      onClick={handleUpload}
+                      className="inline-flex items-center px-6 py-3 bg-white border border-gray-200 text-edge-black font-bold uppercase tracking-widest text-xs hover:bg-edge-black hover:text-white transition-all shadow-sm"
+                    >
+                      <Plus size={16} className="mr-2" /> Select From Cloud
+                    </button>
+
+                    {newItem.images.length > 0 && (
+                      <div className="mt-6 grid grid-cols-4 gap-2">
+                        {newItem.images.map((url, i) => (
+                           <div key={i} className="relative aspect-square bg-white border border-gray-100 overflow-hidden group">
+                              <img src={url} className="w-full h-full object-cover" />
+                              <button 
+                                onClick={() => setNewItem({...newItem, images: newItem.images.filter((_, idx) => idx !== i), imageUrl: i === 0 ? newItem.images[1] || '' : newItem.imageUrl})}
+                                className="absolute inset-0 bg-edge-red/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                           </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    <p className="mt-4 text-[10px] text-gray-400 font-medium uppercase tracking-[0.1em]">
+                      {newItem.images.length} files selected. First file is used as thumbnail.
+                    </p>
                   </div>
                   <div>
                     <label className="block text-xs font-bold tracking-widest text-gray-500 uppercase mb-1">Description</label>

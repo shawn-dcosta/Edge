@@ -31,6 +31,9 @@ const PortfolioItemSchema = new mongoose.Schema({
   description: {
     type: String,
   },
+  eventDate: {
+    type: Date,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

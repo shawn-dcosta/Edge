@@ -25,6 +25,7 @@ interface PortfolioItem {
   imageUrl: string;
   images?: string[]; // Array of additional images
   description?: string;
+  eventDate?: string;
 }
 
 const Portfolio = () => {
@@ -194,6 +195,13 @@ const Portfolio = () => {
                           )}
                         </span>
                      </div>
+                     {item.eventDate && (
+                       <div className="overflow-hidden mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-150">
+                         <span className="text-white/40 text-[9px] font-bold uppercase tracking-widest flex items-center gap-2">
+                           {new Date(item.eventDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                         </span>
+                       </div>
+                     )}
                      <div className="overflow-hidden">
                         <h3 className="text-white text-3xl font-black tracking-tighter transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 delay-200 uppercase leading-none">
                           {item.title}
@@ -327,8 +335,16 @@ const Portfolio = () => {
                     <div className="grid grid-cols-1 gap-4">
                       <div className="p-8 bg-white/5 border border-white/10 space-y-2 group/item transition-all hover:bg-white/10 hover:border-edge-red/50">
                          <p className="text-[10px] uppercase font-bold text-edge-red tracking-[0.2em]">Client Sector</p>
-                         <p className="text-white text-2xl font-black uppercase tracking-tight">{selectedItem.category}</p>
+                          <p className="text-white text-2xl font-black uppercase tracking-tight">{selectedItem.category}</p>
                       </div>
+                      {selectedItem.eventDate && (
+                        <div className="p-8 bg-white/5 border border-white/10 space-y-2 group/item transition-all hover:bg-white/10 hover:border-edge-red/50">
+                           <p className="text-[10px] uppercase font-bold text-edge-red tracking-[0.2em]">Execution Date</p>
+                           <p className="text-white text-2xl font-black uppercase tracking-tight">
+                             {new Date(selectedItem.eventDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                           </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                </motion.div>

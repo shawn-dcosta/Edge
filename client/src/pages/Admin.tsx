@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Trash2, Plus, Mail, LogOut, LayoutDashboard, Database, MessageSquare } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Trash2, Plus, Mail, Database, MessageSquare, Eye, Calendar, CheckCircle2, GripVertical, Star } from 'lucide-react';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 
 const CATEGORIES = [
@@ -28,8 +28,11 @@ const AdminDashboard = () => {
     category: CATEGORIES[0],
     imageUrl: '',
     images: [] as string[],
-    description: ''
+    description: '',
+    eventDate: ''
   });
+
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -108,7 +111,7 @@ const AdminDashboard = () => {
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Attempting to add item:', newItem);
-    
+
     if (!newItem.imageUrl) {
       alert("Please upload at least one image/video.");
       return;
@@ -118,9 +121,9 @@ const AdminDashboard = () => {
       console.log('Sending request to server...');
       const response = await axios.post('http://localhost:5000/api/portfolio', newItem, { withCredentials: true });
       console.log('Server response:', response.data);
-      
+
       alert("Item published successfully!");
-      setNewItem({ title: '', category: CATEGORIES[0], imageUrl: '', images: [], description: '' });
+      setNewItem({ title: '', category: CATEGORIES[0], imageUrl: '', images: [], description: '', eventDate: '' });
       fetchData();
     } catch (err) {
       console.error('Failed to add item:', err);
@@ -141,9 +144,9 @@ const AdminDashboard = () => {
   return (
     <div className="w-full bg-slate-50 min-h-screen pt-32 pb-12 text-slate-900 selection:bg-edge-red/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Header Section */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -155,7 +158,7 @@ const AdminDashboard = () => {
             </h1>
             <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Edge Productions / Creative Management</p>
           </div>
-          
+
           <div className="flex items-center gap-4 bg-white shadow-sm border border-slate-200 p-2 rounded-full px-6">
             <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Live Workspace</span>
@@ -163,19 +166,19 @@ const AdminDashboard = () => {
         </motion.div>
 
         {/* Navigation Tabs */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
           className="flex space-x-2 mb-10 p-1.5 bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl w-fit shadow-sm"
         >
-          <button 
+          <button
             onClick={() => setActiveTab('portfolio')}
             className={`px-8 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] transition-all duration-300 flex items-center gap-2 ${activeTab === 'portfolio' ? 'bg-edge-black text-white shadow-lg shadow-black/10' : 'text-slate-400 hover:text-edge-black hover:bg-slate-50'}`}
           >
             <Database size={14} /> Portfolio Manager
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('inquiries')}
             className={`px-8 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] transition-all duration-300 flex items-center gap-2 ${activeTab === 'inquiries' ? 'bg-edge-black text-white shadow-lg shadow-black/10' : 'text-slate-400 hover:text-edge-black hover:bg-slate-50'}`}
           >
@@ -185,7 +188,7 @@ const AdminDashboard = () => {
 
         <AnimatePresence mode="wait">
           {activeTab === 'portfolio' ? (
-            <motion.div 
+            <motion.div
               key="portfolio"
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -193,7 +196,7 @@ const AdminDashboard = () => {
               transition={{ duration: 0.4 }}
               className="grid grid-cols-1 lg:grid-cols-3 gap-10"
             >
-              
+
               {/* Add New Form */}
               <div className="lg:col-span-1">
                 <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 sticky top-32">
@@ -201,16 +204,16 @@ const AdminDashboard = () => {
                   <form onSubmit={handleAddItem} className="space-y-6">
                     <div className="group">
                       <label className="block text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-2 group-focus-within:text-edge-red transition-colors">Project Name</label>
-                      <input 
-                        required 
-                        type="text" 
-                        value={newItem.title} 
-                        onChange={e => setNewItem({...newItem, title: e.target.value})} 
-                        className="w-full bg-slate-50 p-4 outline-none border border-slate-100 rounded-2xl focus:border-edge-red/30 focus:bg-white transition-all text-sm font-bold text-edge-black placeholder:text-slate-300" 
+                      <input
+                        required
+                        type="text"
+                        value={newItem.title}
+                        onChange={e => setNewItem({ ...newItem, title: e.target.value })}
+                        className="w-full bg-slate-50 p-4 outline-none border border-slate-100 rounded-2xl focus:border-edge-red/30 focus:bg-white transition-all text-sm font-bold text-edge-black placeholder:text-slate-300"
                         placeholder="Project Title..."
                       />
                     </div>
-                    
+
                     <div className="group">
                       <label className="block text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-2 group-focus-within:text-edge-red transition-colors">Service Category</label>
                       <select 
@@ -222,10 +225,23 @@ const AdminDashboard = () => {
                       </select>
                     </div>
 
+                    <div className="group">
+                      <label className="block text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-2 group-focus-within:text-edge-red transition-colors">Event Date (Optional)</label>
+                      <div className="relative">
+                        <input 
+                          type="date" 
+                          value={newItem.eventDate} 
+                          onChange={e => setNewItem({...newItem, eventDate: e.target.value})} 
+                          className="w-full bg-slate-50 p-4 pl-12 outline-none border border-slate-100 rounded-2xl focus:border-edge-red/30 focus:bg-white transition-all text-sm font-bold text-edge-black appearance-none cursor-pointer"
+                        />
+                        <Calendar size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none" />
+                      </div>
+                    </div>
+
                     <div className="bg-slate-50 p-8 rounded-3xl border-2 border-dashed border-slate-200 text-center transition-all hover:border-edge-red/30 hover:bg-white group">
                       <label className="block text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-6 text-center">Visual Assets</label>
-                      
-                      <button 
+
+                      <button
                         type="button"
                         onClick={handleUpload}
                         className="group relative inline-flex items-center px-8 py-4 bg-edge-black text-white font-black uppercase tracking-widest text-[10px] rounded-2xl overflow-hidden active:scale-95 transition-transform shadow-lg shadow-black/10"
@@ -236,39 +252,115 @@ const AdminDashboard = () => {
                       </button>
 
                       {newItem.images.length > 0 && (
-                        <div className="mt-8 grid grid-cols-3 gap-3">
-                          {newItem.images.map((url, i) => (
-                            <motion.div 
-                              initial={{ scale: 0.9, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              key={i} 
-                              className="relative aspect-square rounded-xl overflow-hidden group/thumb border border-slate-100 shadow-sm"
-                            >
-                              <img src={url} className="w-full h-full object-cover" />
-                              <button 
-                                onClick={() => setNewItem({...newItem, images: newItem.images.filter((_, idx) => idx !== i), imageUrl: i === 0 ? newItem.images[1] || '' : newItem.imageUrl})}
-                                className="absolute inset-0 bg-edge-red/90 text-white flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 transition-opacity"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </motion.div>
-                          ))}
+                        <div className="mt-8 space-y-4">
+                          <div className="flex items-center justify-between px-2">
+                             <label className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">Manage Stack</label>
+                             <span className="text-[9px] font-bold text-slate-300 uppercase">{newItem.images.length} Assets</span>
+                          </div>
+                          
+                            <div className="relative group/stack">
+                              {/* Outer Wrapper for Border/BG Tracking */}
+                              <div className="rounded-xl border border-slate-200 bg-slate-100 overflow-hidden shadow-inner">
+                                <div className="max-h-[280px] overflow-y-auto overflow-x-hidden pt-3 px-3 pb-6 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-slate-300 scrollbar-track-transparent hover:scrollbar-thumb-slate-400 transition-all">
+                                  <Reorder.Group 
+                                    axis="y" 
+                                    values={newItem.images} 
+                                    onReorder={(newOrder) => setNewItem({...newItem, images: newOrder})}
+                                    className="space-y-3"
+                                  >
+                                    {newItem.images.map((url, idx) => (
+                                      <Reorder.Item 
+                                        key={url} 
+                                        value={url}
+                                        whileDrag={{ 
+                                          scale: 1.02, 
+                                          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                                          zIndex: 50
+                                        }}
+                                        transition={{ type: "spring", stiffness: 500, damping: 30, mass: 1 }}
+                                        className="relative bg-white border border-slate-200 rounded-xl p-3 flex items-center group/item shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing touch-none"
+                                      >
+                                        <div className="text-slate-300 group-hover/item:text-edge-red transition-colors flex-shrink-0">
+                                          <GripVertical size={20} />
+                                        </div>
+
+                                        <span className="text-[12px] font-black text-slate-500 w-5 text-center shrink-0">
+                                          {idx + 1}
+                                        </span>
+
+                                        <div className="w-16 h-11 rounded-lg overflow-hidden border border-slate-100 bg-slate-50 flex-shrink-0 ml-2">
+                                          <img src={url} className="w-full h-full object-cover" />
+                                        </div>
+
+                                        <div className="flex-grow flex items-center justify-end ml-4">
+                                          {newItem.imageUrl === url && (
+                                            <div className="bg-green-500/10 text-green-600 p-1 rounded-full border border-green-500/20" title="Thumbnail">
+                                              <Star size={10} fill="currentColor" />
+                                            </div>
+                                          )}
+                                        </div>
+
+                                        {/* Centralized Hover Actions */}
+                                        <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] opacity-0 group-hover/item:opacity-100 transition-all duration-300 flex items-center justify-center gap-3 rounded-xl z-10">
+                                          <button 
+                                            type="button"
+                                            onClick={() => setPreviewImage(url)}
+                                            className="w-10 h-10 rounded-xl bg-white text-slate-600 hover:bg-edge-black hover:text-white flex items-center justify-center transition-all shadow-xl active:scale-90"
+                                            title="Preview Image"
+                                          >
+                                            <Eye size={18} />
+                                          </button>
+                                          <button 
+                                            type="button"
+                                            onClick={() => setNewItem({...newItem, imageUrl: url})}
+                                            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-xl active:scale-90 ${newItem.imageUrl === url ? 'bg-green-500 text-white shadow-green-500/20' : 'bg-white text-slate-600 hover:bg-green-500 hover:text-white'}`}
+                                            title="Set as Thumbnail"
+                                          >
+                                            <CheckCircle2 size={18} />
+                                          </button>
+                                          <button 
+                                            type="button"
+                                            onClick={() => {
+                                              const newImages = newItem.images.filter(img => img !== url);
+                                              setNewItem({
+                                                ...newItem, 
+                                                images: newImages, 
+                                                imageUrl: newItem.imageUrl === url ? (newImages[0] || '') : newItem.imageUrl
+                                              });
+                                            }}
+                                            className="w-10 h-10 rounded-xl bg-white text-slate-600 hover:bg-edge-red hover:text-white flex items-center justify-center transition-all shadow-xl active:scale-90"
+                                            title="Remove Asset"
+                                          >
+                                            <Trash2 size={18} />
+                                          </button>
+                                        </div>
+                                      </Reorder.Item>
+                                    ))}
+                                  </Reorder.Group>
+                                </div>
+                              </div>
+                              
+                              {/* Bottom Fade Hint (Synced with Outer Wrapper) */}
+                              {newItem.images.length > 3 && (
+                                <div className="absolute bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-slate-100 to-transparent pointer-events-none z-20 rounded-b-xl" />
+                              )}
+                            </div>
                         </div>
                       )}
                     </div>
 
                     <div className="group">
                       <label className="block text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-2 group-focus-within:text-edge-red transition-colors">Description</label>
-                      <textarea 
-                        value={newItem.description} 
-                        onChange={e => setNewItem({...newItem, description: e.target.value})} 
-                        className="w-full bg-slate-50 p-4 outline-none border border-slate-100 rounded-2xl focus:border-edge-red/30 focus:bg-white transition-all text-sm font-bold text-edge-black h-28 resize-none placeholder:text-slate-300" 
+                      <textarea
+                        value={newItem.description}
+                        onChange={e => setNewItem({ ...newItem, description: e.target.value })}
+                        className="w-full bg-slate-50 p-4 outline-none border border-slate-100 rounded-2xl focus:border-edge-red/30 focus:bg-white transition-all text-sm font-bold text-edge-black h-28 resize-none placeholder:text-slate-300"
                         placeholder="Project details..."
                       />
                     </div>
 
                     <button type="submit" className="w-full bg-edge-red text-white font-black uppercase tracking-[0.2em] py-5 rounded-2xl mt-4 shadow-xl shadow-edge-red/20 hover:shadow-edge-red/40 hover:-translate-y-1 transition-all duration-300 flex justify-center items-center gap-3 active:scale-[0.98]">
-                      <Plus size={20} /> Publish to Feed
+                      <Plus size={20} /> Publish
                     </button>
                   </form>
                 </div>
@@ -296,11 +388,11 @@ const AdminDashboard = () => {
                           <tr><td colSpan={4} className="p-24 text-center text-slate-300 uppercase font-black tracking-widest text-sm">No items found in directory.</td></tr>
                         ) : (
                           portfolio.map((item, index) => (
-                            <motion.tr 
+                            <motion.tr
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: index * 0.05 }}
-                              key={item._id} 
+                              key={item._id}
                               className="group hover:bg-slate-50/50 transition-colors"
                             >
                               <td className="p-8">
@@ -316,8 +408,8 @@ const AdminDashboard = () => {
                                 <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">{item.category}</span>
                               </td>
                               <td className="p-8 text-right">
-                                <button 
-                                  onClick={() => handleDeleteItem(item._id)} 
+                                <button
+                                  onClick={() => handleDeleteItem(item._id)}
                                   className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-edge-red hover:text-white hover:border-edge-red transition-all duration-300 shadow-sm"
                                 >
                                   <Trash2 size={16} />
@@ -333,7 +425,7 @@ const AdminDashboard = () => {
               </div>
             </motion.div>
           ) : (
-            <motion.div 
+            <motion.div
               key="inquiries"
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -361,11 +453,11 @@ const AdminDashboard = () => {
                       <tr><td colSpan={5} className="p-24 text-center text-slate-300 uppercase font-black tracking-widest text-sm">Inbox is currently empty.</td></tr>
                     ) : (
                       inquiries.map((inq, index) => (
-                        <motion.tr 
+                        <motion.tr
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          key={inq._id} 
+                          key={inq._id}
                           className="group hover:bg-slate-50/50 transition-colors align-top"
                         >
                           <td className="p-8">
@@ -389,7 +481,7 @@ const AdminDashboard = () => {
                             </p>
                           </td>
                           <td className="p-8 text-right text-xs">
-                             <span className="inline-block px-4 py-1.5 text-[9px] font-black uppercase tracking-widest bg-white border border-slate-200 text-slate-400 rounded-lg group-hover:border-edge-red/30 transition-colors">
+                            <span className="inline-block px-4 py-1.5 text-[9px] font-black uppercase tracking-widest bg-white border border-slate-200 text-slate-400 rounded-lg group-hover:border-edge-red/30 transition-colors">
                               {inq.status || 'Received'}
                             </span>
                           </td>
@@ -403,6 +495,35 @@ const AdminDashboard = () => {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Preview Lightbox Modal */}
+      <AnimatePresence>
+        {previewImage && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-slate-900/90 flex items-center justify-center p-4 backdrop-blur-md"
+            onClick={() => setPreviewImage(null)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-5xl w-full aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              <img src={previewImage} className="w-full h-full object-contain" />
+              <button 
+                onClick={() => setPreviewImage(null)}
+                className="absolute top-6 right-6 w-12 h-12 bg-white/10 hover:bg-white backdrop-blur-md rounded-full flex items-center justify-center text-edge-red transition-all shadow-xl active:scale-90"
+              >
+                <Plus className="rotate-45" size={24} />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

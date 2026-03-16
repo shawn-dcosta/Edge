@@ -1,4 +1,4 @@
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { LogIn, UserPlus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';

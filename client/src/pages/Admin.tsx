@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Trash2, Plus, Mail, Database, MessageSquare, Eye, Calendar, CheckCircle2, GripVertical, Star } from 'lucide-react';
+import { Trash2, Plus, Mail, Database, MessageSquare, Eye, Calendar, CheckCircle2, GripVertical, Star, Edit2 } from 'lucide-react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 
@@ -33,6 +33,8 @@ const AdminDashboard = () => {
   });
 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -119,15 +121,22 @@ const AdminDashboard = () => {
 
     try {
       console.log('Sending request to server...');
-      const response = await axios.post('http://localhost:5000/api/portfolio', newItem, { withCredentials: true });
-      console.log('Server response:', response.data);
+      
+      if (isEditing && editingId) {
+        await axios.put(`http://localhost:5000/api/portfolio/${editingId}`, newItem, { withCredentials: true });
+        alert("Item updated successfully!");
+      } else {
+        await axios.post('http://localhost:5000/api/portfolio', newItem, { withCredentials: true });
+        alert("Item published successfully!");
+      }
 
-      alert("Item published successfully!");
       setNewItem({ title: '', category: CATEGORIES[0], imageUrl: '', images: [], description: '', eventDate: '' });
+      setIsEditing(false);
+      setEditingId(null);
       fetchData();
     } catch (err) {
-      console.error('Failed to add item:', err);
-      alert("Error: Could not publish item. Check server connection.");
+      console.error('Failed to process item:', err);
+      alert(`Error: Could not ${isEditing ? 'update' : 'publish'} item. Check server connection.`);
     }
   };
 
@@ -139,6 +148,26 @@ const AdminDashboard = () => {
     } catch (err) {
       console.error('Failed to delete item');
     }
+  };
+
+  const handleEditItem = (item: any) => {
+    setIsEditing(true);
+    setEditingId(item._id);
+    setNewItem({
+      title: item.title,
+      category: item.category,
+      imageUrl: item.imageUrl,
+      images: item.images || [item.imageUrl],
+      description: item.description || '',
+      eventDate: item.eventDate ? new Date(item.eventDate).toISOString().split('T')[0] : ''
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelEdit = () => {
+    setIsEditing(false);
+    setEditingId(null);
+    setNewItem({ title: '', category: CATEGORIES[0], imageUrl: '', images: [], description: '', eventDate: '' });
   };
 
   return (
@@ -159,10 +188,7 @@ const AdminDashboard = () => {
             <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Edge Productions / Creative Management</p>
           </div>
 
-          <div className="flex items-center gap-4 bg-white shadow-sm border border-slate-200 p-2 rounded-full px-6">
-            <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Live Workspace</span>
-          </div>
+
         </motion.div>
 
         {/* Navigation Tabs */}
@@ -200,7 +226,24 @@ const AdminDashboard = () => {
               {/* Add New Form */}
               <div className="lg:col-span-1">
                 <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 sticky top-32">
-                  <h2 className="text-xl font-black uppercase tracking-widest mb-8 border-l-4 border-edge-red pl-4 text-edge-black">Create Item</h2>
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h2 className="text-xl font-black uppercase tracking-widest border-l-4 border-edge-red pl-4 text-edge-black mb-1">
+                        {isEditing ? 'Update Item' : 'Create Item'}
+                      </h2>
+                      {isEditing && (
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest pl-4">Editing ID: {editingId?.slice(-6)}</p>
+                      )}
+                    </div>
+                    {isEditing && (
+                      <button 
+                        onClick={cancelEdit}
+                        className="text-[10px] font-black uppercase tracking-widest text-edge-red hover:underline"
+                      >
+                        Cancel Edit
+                      </button>
+                    )}
+                  </div>
                   <form onSubmit={handleAddItem} className="space-y-6">
                     <div className="group">
                       <label className="block text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-2 group-focus-within:text-edge-red transition-colors">Project Name</label>
@@ -359,8 +402,12 @@ const AdminDashboard = () => {
                       />
                     </div>
 
-                    <button type="submit" className="w-full bg-edge-red text-white font-black uppercase tracking-[0.2em] py-5 rounded-2xl mt-4 shadow-xl shadow-edge-red/20 hover:shadow-edge-red/40 hover:-translate-y-1 transition-all duration-300 flex justify-center items-center gap-3 active:scale-[0.98]">
-                      <Plus size={20} /> Publish
+                    <button 
+                      type="submit" 
+                      className={`w-full ${isEditing ? 'bg-green-600 shadow-green-600/20 hover:shadow-green-600/40' : 'bg-edge-red shadow-edge-red/20 hover:shadow-edge-red/40'} text-white font-black uppercase tracking-[0.2em] py-5 rounded-2xl mt-4 shadow-xl hover:-translate-y-1 transition-all duration-300 flex justify-center items-center gap-3 active:scale-[0.98]`}
+                    >
+                      {isEditing ? <CheckCircle2 size={20} /> : <Plus size={20} />} 
+                      {isEditing ? 'Save Changes' : 'Publish'}
                     </button>
                   </form>
                 </div>
@@ -369,18 +416,29 @@ const AdminDashboard = () => {
               {/* Portfolio Grid/List */}
               <div className="lg:col-span-2 space-y-4">
                 <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xl shadow-slate-200/50">
-                  <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white">
-                    <h3 className="font-black uppercase tracking-widest text-[11px] text-slate-900">Current Collection</h3>
-                    <span className="bg-slate-100 text-slate-500 px-4 py-1.5 rounded-full text-[10px] font-black border border-slate-200">{portfolio.length} ITEMS</span>
+                  <div className="px-8 py-5 border-b border-slate-100 flex items-center justify-between bg-white">
+                    <div>
+                      <h3 className="font-black uppercase tracking-widest text-[11px] text-slate-900 mb-0.5">
+                        {isEditing ? 'Update Existing Project' : 'Current Collection'}
+                      </h3>
+                      {isEditing && (
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                          Editing ID: {editingId?.slice(-6)}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="bg-slate-100 text-slate-500 px-4 py-1.5 rounded-full text-[10px] font-black border border-slate-200">{portfolio.length} ITEMS</span>
+                    </div>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="bg-slate-50 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-100">
-                          <th className="p-8">Preview</th>
-                          <th className="p-8">Project Information</th>
-                          <th className="p-8">Classification</th>
-                          <th className="p-8 text-right">Settings</th>
+                          <th className="px-8 py-5 text-left">Preview</th>
+                          <th className="px-4 py-5 text-left">Project Information</th>
+                          <th className="px-4 py-5 text-left">Classification</th>
+                          <th className="px-8 py-5 text-center">Settings</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-50">
@@ -395,25 +453,35 @@ const AdminDashboard = () => {
                               key={item._id}
                               className="group hover:bg-slate-50/50 transition-colors"
                             >
-                              <td className="p-8">
+                              <td className="px-8 py-6">
                                 <div className="w-24 h-16 rounded-xl overflow-hidden border border-slate-100 shadow-sm transition-transform duration-500 group-hover:scale-105">
                                   <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
                                 </div>
                               </td>
-                              <td className="p-8">
+                              <td className="px-4 py-6">
                                 <span className="font-black text-slate-900 text-sm tracking-tight group-hover:text-edge-red transition-colors block mb-1">{item.title}</span>
                                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">ID: {item._id.slice(-6)}</span>
                               </td>
-                              <td className="p-8">
+                              <td className="px-4 py-6">
                                 <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">{item.category}</span>
                               </td>
-                              <td className="p-8 text-right">
-                                <button
-                                  onClick={() => handleDeleteItem(item._id)}
-                                  className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-edge-red hover:text-white hover:border-edge-red transition-all duration-300 shadow-sm"
-                                >
-                                  <Trash2 size={16} />
-                                </button>
+                              <td className="px-8 py-6 text-center">
+                                <div className="flex items-center justify-center gap-2">
+                                  <button
+                                    onClick={() => handleEditItem(item)}
+                                    className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-edge-black hover:text-white hover:border-edge-black transition-all duration-300 shadow-sm"
+                                    title="Edit Item"
+                                  >
+                                    <Edit2 size={16} />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteItem(item._id)}
+                                    className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-edge-red hover:text-white hover:border-edge-red transition-all duration-300 shadow-sm"
+                                    title="Delete Item"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </div>
                               </td>
                             </motion.tr>
                           ))

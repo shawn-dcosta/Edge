@@ -57,3 +57,27 @@ export const deletePortfolioItem = async (req, res) => {
     res.status(500).json({ message: 'Error deleting portfolio item' });
   }
 };
+export const updatePortfolioItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, category, imageUrl, images, description, eventDate } = req.body;
+    
+    if (!title || !category || !imageUrl) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const updatedItem = await PortfolioItem.findByIdAndUpdate(
+      id,
+      { title, category, imageUrl, images, description, eventDate },
+      { new: true }
+    );
+
+    if (!updatedItem) {
+      return res.status(404).json({ message: 'Portfolio item not found' });
+    }
+
+    res.json(updatedItem);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating portfolio item', error });
+  }
+};

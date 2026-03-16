@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Trash2, Plus, Mail } from 'lucide-react';
+import { Trash2, Plus, Mail, LogOut, LayoutDashboard, Database, MessageSquare } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 
 const CATEGORIES = [
@@ -93,10 +94,10 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     try {
       if (activeTab === 'portfolio') {
-        const res = await axios.get('http://localhost:5000/api/portfolio');
+        const res = await axios.get('http://localhost:5000/api/portfolio', { withCredentials: true });
         setPortfolio(res.data);
       } else {
-        const res = await axios.get('http://localhost:5000/api/inquiry');
+        const res = await axios.get('http://localhost:5000/api/inquiry', { withCredentials: true });
         setInquiries(res.data);
       }
     } catch (err) {
@@ -106,23 +107,31 @@ const AdminDashboard = () => {
 
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Attempting to add item:', newItem);
+    
     if (!newItem.imageUrl) {
       alert("Please upload at least one image/video.");
       return;
     }
+
     try {
-      await axios.post('http://localhost:5000/api/portfolio', newItem);
+      console.log('Sending request to server...');
+      const response = await axios.post('http://localhost:5000/api/portfolio', newItem, { withCredentials: true });
+      console.log('Server response:', response.data);
+      
+      alert("Item published successfully!");
       setNewItem({ title: '', category: CATEGORIES[0], imageUrl: '', images: [], description: '' });
       fetchData();
     } catch (err) {
-      console.error('Failed to add item');
+      console.error('Failed to add item:', err);
+      alert("Error: Could not publish item. Check server connection.");
     }
   };
 
   const handleDeleteItem = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this item?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/portfolio/${id}`);
+      await axios.delete(`http://localhost:5000/api/portfolio/${id}`, { withCredentials: true });
       fetchData();
     } catch (err) {
       console.error('Failed to delete item');
@@ -130,159 +139,269 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="w-full bg-edge-gray min-h-screen pt-32 pb-12">
+    <div className="w-full bg-slate-50 min-h-screen pt-32 pb-12 text-slate-900 selection:bg-edge-red/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6 border-b border-black/5 pb-8">
-          <h1 className="text-4xl font-black uppercase tracking-widest text-edge-black">
-            Admin <span className="text-edge-red">Portal</span>
-          </h1>
-        </div>
+        
+        {/* Header Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6"
+        >
+          <div>
+            <h1 className="text-5xl font-black uppercase tracking-tighter text-edge-black mb-2">
+              Admin <span className="text-edge-red text-shadow-sm">Portal</span>
+            </h1>
+            <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Edge Productions / Creative Management</p>
+          </div>
+          
+          <div className="flex items-center gap-4 bg-white shadow-sm border border-slate-200 p-2 rounded-full px-6">
+            <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Live Workspace</span>
+          </div>
+        </motion.div>
 
-        {/* Tabs */}
-        <div className="flex space-x-4 mb-8">
-          <button
+        {/* Navigation Tabs */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="flex space-x-2 mb-10 p-1.5 bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl w-fit shadow-sm"
+        >
+          <button 
             onClick={() => setActiveTab('portfolio')}
-            className={`px-6 py-3 font-bold uppercase tracking-widest text-sm transition-colors ${activeTab === 'portfolio' ? 'bg-edge-black text-white' : 'bg-white text-edge-black hover:bg-gray-100'}`}
+            className={`px-8 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] transition-all duration-300 flex items-center gap-2 ${activeTab === 'portfolio' ? 'bg-edge-black text-white shadow-lg shadow-black/10' : 'text-slate-400 hover:text-edge-black hover:bg-slate-50'}`}
           >
-            Manage Portfolio
+            <Database size={14} /> Portfolio Manager
           </button>
-          <button
+          <button 
             onClick={() => setActiveTab('inquiries')}
-            className={`px-6 py-3 font-bold uppercase tracking-widest text-sm transition-colors flex items-center ${activeTab === 'inquiries' ? 'bg-edge-black text-white' : 'bg-white text-edge-black hover:bg-gray-100'}`}
+            className={`px-8 py-3 rounded-xl font-black uppercase tracking-widest text-[11px] transition-all duration-300 flex items-center gap-2 ${activeTab === 'inquiries' ? 'bg-edge-black text-white shadow-lg shadow-black/10' : 'text-slate-400 hover:text-edge-black hover:bg-slate-50'}`}
           >
-            <Mail size={16} className="mr-2" /> Inquiries
+            <MessageSquare size={14} /> Inbox
           </button>
-        </div>
+        </motion.div>
 
-        {/* Portfolio Content */}
-        {activeTab === 'portfolio' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            {/* Add New Form */}
-            <div className="bg-white p-6 shadow-sm border border-gray-100 h-fit">
-              <h2 className="text-xl font-bold uppercase tracking-widest mb-6 border-b-2 border-edge-red pb-2 inline-block">Add New Item</h2>
-              <form onSubmit={handleAddItem} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold tracking-widest text-gray-500 uppercase mb-1">Title</label>
-                  <input required type="text" value={newItem.title} onChange={e => setNewItem({ ...newItem, title: e.target.value })} className="w-full bg-edge-gray p-3 outline-none focus:border-edge-red border-b-2 border-transparent" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold tracking-widest text-gray-500 uppercase mb-1">Category</label>
-                  <select value={newItem.category} onChange={e => setNewItem({ ...newItem, category: e.target.value })} className="w-full bg-edge-gray p-3 outline-none focus:border-edge-red border-b-2 border-transparent">
-                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </div>
-                <div className="bg-edge-gray p-6 border-2 border-dashed border-gray-200 text-center transition-colors hover:border-edge-red">
-                  <label className="block text-xs font-bold tracking-widest text-gray-500 uppercase mb-4 text-center">Project Media</label>
-
-                  <button
-                    type="button"
-                    onClick={handleUpload}
-                    className="inline-flex items-center px-6 py-3 bg-white border border-gray-200 text-edge-black font-bold uppercase tracking-widest text-xs hover:bg-edge-black hover:text-white transition-all shadow-sm"
-                  >
-                    <Plus size={16} className="mr-2" /> Select From Cloud
-                  </button>
-
-                  {newItem.images.length > 0 && (
-                    <div className="mt-6 grid grid-cols-4 gap-2">
-                      {newItem.images.map((url, i) => (
-                        <div key={i} className="relative aspect-square bg-white border border-gray-100 overflow-hidden group">
-                          <img src={url} className="w-full h-full object-cover" />
-                          <button
-                            onClick={() => setNewItem({ ...newItem, images: newItem.images.filter((_, idx) => idx !== i), imageUrl: i === 0 ? newItem.images[1] || '' : newItem.imageUrl })}
-                            className="absolute inset-0 bg-edge-red/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      ))}
+        <AnimatePresence mode="wait">
+          {activeTab === 'portfolio' ? (
+            <motion.div 
+              key="portfolio"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              transition={{ duration: 0.4 }}
+              className="grid grid-cols-1 lg:grid-cols-3 gap-10"
+            >
+              
+              {/* Add New Form */}
+              <div className="lg:col-span-1">
+                <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 sticky top-32">
+                  <h2 className="text-xl font-black uppercase tracking-widest mb-8 border-l-4 border-edge-red pl-4 text-edge-black">Create Item</h2>
+                  <form onSubmit={handleAddItem} className="space-y-6">
+                    <div className="group">
+                      <label className="block text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-2 group-focus-within:text-edge-red transition-colors">Project Name</label>
+                      <input 
+                        required 
+                        type="text" 
+                        value={newItem.title} 
+                        onChange={e => setNewItem({...newItem, title: e.target.value})} 
+                        className="w-full bg-slate-50 p-4 outline-none border border-slate-100 rounded-2xl focus:border-edge-red/30 focus:bg-white transition-all text-sm font-bold text-edge-black placeholder:text-slate-300" 
+                        placeholder="Project Title..."
+                      />
                     </div>
-                  )}
+                    
+                    <div className="group">
+                      <label className="block text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-2 group-focus-within:text-edge-red transition-colors">Service Category</label>
+                      <select 
+                        value={newItem.category} 
+                        onChange={e => setNewItem({...newItem, category: e.target.value})} 
+                        className="w-full bg-slate-50 p-4 outline-none border border-slate-100 rounded-2xl focus:border-edge-red/30 focus:bg-white transition-all text-sm font-bold text-edge-black appearance-none cursor-pointer"
+                      >
+                        {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
 
-                  <p className="mt-4 text-[10px] text-gray-400 font-medium uppercase tracking-[0.1em]">
-                    {newItem.images.length} files selected. First file is used as thumbnail.
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold tracking-widest text-gray-500 uppercase mb-1">Description</label>
-                  <textarea value={newItem.description} onChange={e => setNewItem({ ...newItem, description: e.target.value })} className="w-full bg-edge-gray p-3 outline-none focus:border-edge-red border-b-2 border-transparent h-20 text-sm" />
-                </div>
-                <button type="submit" className="w-full bg-edge-red text-white font-bold uppercase py-3 mt-4 hover:bg-edge-black transition-colors flex justify-center items-center">
-                  <Plus size={18} className="mr-2" /> Add to Portfolio
-                </button>
-              </form>
-            </div>
+                    <div className="bg-slate-50 p-8 rounded-3xl border-2 border-dashed border-slate-200 text-center transition-all hover:border-edge-red/30 hover:bg-white group">
+                      <label className="block text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-6 text-center">Visual Assets</label>
+                      
+                      <button 
+                        type="button"
+                        onClick={handleUpload}
+                        className="group relative inline-flex items-center px-8 py-4 bg-edge-black text-white font-black uppercase tracking-widest text-[10px] rounded-2xl overflow-hidden active:scale-95 transition-transform shadow-lg shadow-black/10"
+                      >
+                        <span className="relative z-10 flex items-center gap-2">
+                          <Plus size={16} /> Cloud Upload
+                        </span>
+                      </button>
 
-            {/* List */}
-            <div className="lg:col-span-2">
-              <div className="bg-white shadow-sm border border-gray-100 overflow-hidden">
+                      {newItem.images.length > 0 && (
+                        <div className="mt-8 grid grid-cols-3 gap-3">
+                          {newItem.images.map((url, i) => (
+                            <motion.div 
+                              initial={{ scale: 0.9, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              key={i} 
+                              className="relative aspect-square rounded-xl overflow-hidden group/thumb border border-slate-100 shadow-sm"
+                            >
+                              <img src={url} className="w-full h-full object-cover" />
+                              <button 
+                                onClick={() => setNewItem({...newItem, images: newItem.images.filter((_, idx) => idx !== i), imageUrl: i === 0 ? newItem.images[1] || '' : newItem.imageUrl})}
+                                className="absolute inset-0 bg-edge-red/90 text-white flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 transition-opacity"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </motion.div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="group">
+                      <label className="block text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-2 group-focus-within:text-edge-red transition-colors">Description</label>
+                      <textarea 
+                        value={newItem.description} 
+                        onChange={e => setNewItem({...newItem, description: e.target.value})} 
+                        className="w-full bg-slate-50 p-4 outline-none border border-slate-100 rounded-2xl focus:border-edge-red/30 focus:bg-white transition-all text-sm font-bold text-edge-black h-28 resize-none placeholder:text-slate-300" 
+                        placeholder="Project details..."
+                      />
+                    </div>
+
+                    <button type="submit" className="w-full bg-edge-red text-white font-black uppercase tracking-[0.2em] py-5 rounded-2xl mt-4 shadow-xl shadow-edge-red/20 hover:shadow-edge-red/40 hover:-translate-y-1 transition-all duration-300 flex justify-center items-center gap-3 active:scale-[0.98]">
+                      <Plus size={20} /> Publish to Feed
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              {/* Portfolio Grid/List */}
+              <div className="lg:col-span-2 space-y-4">
+                <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xl shadow-slate-200/50">
+                  <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white">
+                    <h3 className="font-black uppercase tracking-widest text-[11px] text-slate-900">Current Collection</h3>
+                    <span className="bg-slate-100 text-slate-500 px-4 py-1.5 rounded-full text-[10px] font-black border border-slate-200">{portfolio.length} ITEMS</span>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-100">
+                          <th className="p-8">Preview</th>
+                          <th className="p-8">Project Information</th>
+                          <th className="p-8">Classification</th>
+                          <th className="p-8 text-right">Settings</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-50">
+                        {portfolio.length === 0 ? (
+                          <tr><td colSpan={4} className="p-24 text-center text-slate-300 uppercase font-black tracking-widest text-sm">No items found in directory.</td></tr>
+                        ) : (
+                          portfolio.map((item, index) => (
+                            <motion.tr 
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                              key={item._id} 
+                              className="group hover:bg-slate-50/50 transition-colors"
+                            >
+                              <td className="p-8">
+                                <div className="w-24 h-16 rounded-xl overflow-hidden border border-slate-100 shadow-sm transition-transform duration-500 group-hover:scale-105">
+                                  <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                                </div>
+                              </td>
+                              <td className="p-8">
+                                <span className="font-black text-slate-900 text-sm tracking-tight group-hover:text-edge-red transition-colors block mb-1">{item.title}</span>
+                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">ID: {item._id.slice(-6)}</span>
+                              </td>
+                              <td className="p-8">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">{item.category}</span>
+                              </td>
+                              <td className="p-8 text-right">
+                                <button 
+                                  onClick={() => handleDeleteItem(item._id)} 
+                                  className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-edge-red hover:text-white hover:border-edge-red transition-all duration-300 shadow-sm"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </td>
+                            </motion.tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="inquiries"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.4 }}
+              className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xl shadow-slate-200/50"
+            >
+              <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white">
+                <h3 className="font-black uppercase tracking-widest text-[11px] text-slate-900">Communication Logs</h3>
+                <span className="bg-edge-red/10 text-edge-red px-4 py-1.5 rounded-full text-[10px] font-black border border-edge-red/20">{inquiries.length} LOGS</span>
+              </div>
+              <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-edge-black text-white text-xs uppercase tracking-widest">
-                      <th className="p-4">Image</th>
-                      <th className="p-4">Title</th>
-                      <th className="p-4">Category</th>
-                      <th className="p-4 text-center">Action</th>
+                    <tr className="bg-slate-50 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-100">
+                      <th className="p-8">Timestamp</th>
+                      <th className="p-8">Personal Detail</th>
+                      <th className="p-8">Communication</th>
+                      <th className="p-8">Message Snippet</th>
+                      <th className="p-8 text-right">Verification</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {portfolio.length === 0 ? (
-                      <tr><td colSpan={4} className="p-8 text-center text-gray-400">No items found.</td></tr>
+                  <tbody className="divide-y divide-slate-50">
+                    {inquiries.length === 0 ? (
+                      <tr><td colSpan={5} className="p-24 text-center text-slate-300 uppercase font-black tracking-widest text-sm">Inbox is currently empty.</td></tr>
                     ) : (
-                      portfolio.map(item => (
-                        <tr key={item._id} className="border-b border-gray-100 hover:bg-gray-50">
-                          <td className="p-4"><img src={item.imageUrl} alt={item.title} className="w-16 h-16 object-cover bg-gray-200" /></td>
-                          <td className="p-4 font-bold">{item.title}</td>
-                          <td className="p-4 text-sm text-gray-500">{item.category}</td>
-                          <td className="p-4 text-center">
-                            <button onClick={() => handleDeleteItem(item._id)} className="text-gray-400 hover:text-edge-red transition-colors p-2">
-                              <Trash2 size={20} />
-                            </button>
+                      inquiries.map((inq, index) => (
+                        <motion.tr 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          key={inq._id} 
+                          className="group hover:bg-slate-50/50 transition-colors align-top"
+                        >
+                          <td className="p-8">
+                            <span className="text-[10px] font-black text-slate-400 block uppercase tracking-widest">
+                              {new Date(inq.createdAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}
+                            </span>
                           </td>
-                        </tr>
+                          <td className="p-8">
+                            <div className="font-black text-slate-900 text-sm mb-1">{inq.name}</div>
+                            <div className="text-[9px] font-black uppercase text-edge-red tracking-widest">{inq.company}</div>
+                          </td>
+                          <td className="p-8">
+                            <div className="text-[11px] font-bold text-slate-600 flex items-center gap-2 mb-1">
+                              <Mail size={12} className="text-slate-300" /> {inq.email}
+                            </div>
+                            <div className="text-[10px] font-bold text-slate-400">{inq.phone}</div>
+                          </td>
+                          <td className="p-8">
+                            <p className="text-xs text-slate-500 line-clamp-2 max-w-sm leading-relaxed font-medium group-hover:text-slate-900 transition-colors">
+                              {inq.message}
+                            </p>
+                          </td>
+                          <td className="p-8 text-right text-xs">
+                             <span className="inline-block px-4 py-1.5 text-[9px] font-black uppercase tracking-widest bg-white border border-slate-200 text-slate-400 rounded-lg group-hover:border-edge-red/30 transition-colors">
+                              {inq.status || 'Received'}
+                            </span>
+                          </td>
+                        </motion.tr>
                       ))
                     )}
                   </tbody>
                 </table>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Inquiries Content */}
-        {activeTab === 'inquiries' && (
-          <div className="bg-white shadow-sm border border-gray-100 overflow-hidden">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-edge-black text-white text-xs uppercase tracking-widest">
-                  <th className="p-4">Date</th>
-                  <th className="p-4">Name</th>
-                  <th className="p-4">Contact</th>
-                  <th className="p-4">Message</th>
-                  <th className="p-4">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {inquiries.length === 0 ? (
-                  <tr><td colSpan={5} className="p-8 text-center text-gray-400">No inquiries yet.</td></tr>
-                ) : (
-                  inquiries.map(inq => (
-                    <tr key={inq._id} className="border-b border-gray-100 hover:bg-gray-50 align-top">
-                      <td className="p-4 text-sm whitespace-nowrap text-gray-500">{new Date(inq.createdAt).toLocaleDateString()}</td>
-                      <td className="p-4 font-bold">{inq.name} <br /><span className="text-xs font-normal text-gray-400">{inq.company}</span></td>
-                      <td className="p-4 text-sm">{inq.email} <br />{inq.phone}</td>
-                      <td className="p-4 text-sm max-w-md">{inq.message}</td>
-                      <td className="p-4">
-                        <span className="px-2 py-1 text-xs font-bold uppercase tracking-widest bg-edge-gray text-edge-black rounded">{inq.status}</span>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
-
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

@@ -47,6 +47,7 @@ const Home = () => {
                text="Edge to Edge Excellence"
                className="text-edge-red tracking-[0.4em] text-sm md:text-md font-bold uppercase mb-4"
                delay={0.2}
+               wordGap="1em"
              />
              
              <div className="text-6xl md:text-[8rem] font-black tracking-tighter leading-[0.9] mb-8 relative">
@@ -61,7 +62,7 @@ const Home = () => {
                  transition={{ duration: 0.8, delay: 0.6 }}
                  className="max-w-2xl text-xl text-gray-300 leading-relaxed font-light"
                >
-                 The most preferred Production House in India. From fresh creative concepts to intricate logistical execution, we create and manage dynamic, memorable events of all magnitudes.
+                  To be the most preferred Production House in India. From fresh creative concepts to intricate logistical execution, we create and manage dynamic, memorable events of all magnitudes.
                </motion.p>
                <motion.div
                  initial={{ opacity: 0, scale: 0.9 }}

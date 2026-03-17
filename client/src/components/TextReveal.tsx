@@ -4,9 +4,10 @@ interface TextRevealProps {
   text: string;
   className?: string;
   delay?: number;
+  wordGap?: string;
 }
 
-const TextReveal = ({ text, className = '', delay = 0 }: TextRevealProps) => {
+const TextReveal = ({ text, className = '', delay = 0, wordGap = '0.25em' }: TextRevealProps) => {
   const words = text.split(' ');
 
   const container = {
@@ -50,7 +51,7 @@ const TextReveal = ({ text, className = '', delay = 0 }: TextRevealProps) => {
       {words.map((word, index) => (
         <motion.span
           variants={child}
-          style={{ marginRight: '0.25em' }}
+          style={{ marginRight: wordGap }}
           key={index}
         >
           {word}

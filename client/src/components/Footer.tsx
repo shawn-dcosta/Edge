@@ -15,7 +15,7 @@ const Footer = () => {
             className="h-16 mb-6 brightness-0 invert object-contain"
           />
           <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
-            The most preferred Production House in India. We deliver out-of-the-box concepts and execute paramount event experiences.
+            To be the most preferred Production House in India. We deliver out-of-the-box concepts and execute paramount event experiences.
           </p>
           
           <div className="flex space-x-4 mt-8">

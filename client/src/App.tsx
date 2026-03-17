@@ -9,10 +9,12 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <AuthProvider>
+      <Toaster position="bottom-right" reverseOrder={false} />
       <Router>
         <Routes>
           <Route path="/" element={<Layout />}>

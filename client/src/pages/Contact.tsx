@@ -5,6 +5,7 @@ import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react';
 import MagneticWrapper from '../components/MagneticWrapper';
 import TextReveal from '../components/TextReveal';
 import SectionReveal from '../components/SectionReveal';
+import toast from 'react-hot-toast';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -26,11 +27,13 @@ const Contact = () => {
     try {
       await axios.post('http://localhost:5000/api/inquiry', formData);
       setStatus('success');
+      toast.success("Inquiry sent successfully!");
       setFormData({ name: '', email: '', phone: '', company: '', message: '' });
       setTimeout(() => setStatus('idle'), 5000);
     } catch (error) {
       console.error('Error submitting form', error);
       setStatus('error');
+      toast.error("Failed to send inquiry. Please try again.");
     }
   };
 

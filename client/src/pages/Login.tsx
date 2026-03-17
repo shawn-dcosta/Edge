@@ -3,6 +3,7 @@ import { LogIn, UserPlus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const Login = () => {
   const { login, loginWithEmail } = useAuth();
@@ -17,9 +18,11 @@ const Login = () => {
     setLoading(true);
     try {
       await loginWithEmail(formData);
+      toast.success("Login successful!");
       navigate('/admin');
     } catch (err: any) {
       setError(err.message || 'Login failed');
+      toast.error(err.message || "Login failed. Check your credentials.");
     } finally {
       setLoading(false);
     }

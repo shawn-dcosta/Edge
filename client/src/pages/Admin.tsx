@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Trash2, Plus, Mail, Phone, Database, MessageSquare, Eye, Calendar, CheckCircle2, GripVertical, Star, Edit2, Search, CheckSquare, Square, XCircle, User, Building2, Clock } from 'lucide-react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
+import toast from 'react-hot-toast';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 const CATEGORIES = [
   'Award Functions', 'Exhibitions', 'Corporate Events',
@@ -65,6 +67,23 @@ const AdminDashboard = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  // Confirmation Modal State
+  const [confirmConfig, setConfirmConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    isDestructive?: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    isDestructive: true
+  });
+
+  const closeConfirm = () => setConfirmConfig(prev => ({ ...prev, isOpen: false }));
 
   useEffect(() => {
     fetchData();
@@ -145,7 +164,7 @@ const AdminDashboard = () => {
     console.log('Attempting to add item:', newItem);
 
     if (!newItem.imageUrl) {
-      alert("Please upload at least one image/video.");
+      toast.error("Please upload at least one image/video.");
       return;
     }
 
@@ -154,10 +173,10 @@ const AdminDashboard = () => {
       
       if (isEditing && editingId) {
         await axios.put(`http://localhost:5000/api/portfolio/${editingId}`, newItem, { withCredentials: true });
-        alert("Item updated successfully!");
+        toast.success("Item updated successfully!");
       } else {
         await axios.post('http://localhost:5000/api/portfolio', newItem, { withCredentials: true });
-        alert("Item published successfully!");
+        toast.success("Item published successfully!");
       }
 
       setNewItem({ title: '', category: CATEGORIES[0], imageUrl: '', images: [], description: '', eventDate: '' });
@@ -166,19 +185,28 @@ const AdminDashboard = () => {
       fetchData();
     } catch (err) {
       console.error('Failed to process item:', err);
-      alert(`Error: Could not ${isEditing ? 'update' : 'publish'} item. Check server connection.`);
+      toast.error(`Error: Could not ${isEditing ? 'update' : 'publish'} item.`);
     }
   };
 
   const handleDeleteItem = async (id: string) => {
-    if (window.confirm("Are you sure you want to permanently remove this project from the portfolio?")) {
-      try {
-        await axios.delete(`http://localhost:5000/api/portfolio/${id}`, { withCredentials: true });
-        fetchData();
-      } catch (err) {
-        console.error('Failed to delete item');
+    setConfirmConfig({
+      isOpen: true,
+      title: "Remove Project?",
+      message: "Are you sure you want to permanently remove this project from the portfolio?",
+      isDestructive: true,
+      onConfirm: async () => {
+        try {
+          await axios.delete(`http://localhost:5000/api/portfolio/${id}`, { withCredentials: true });
+          toast.success("Project removed successfully");
+          fetchData();
+        } catch (err) {
+          toast.error("Failed to delete project");
+          console.error('Failed to delete item');
+        }
+        closeConfirm();
       }
-    }
+    });
   };
 
   const handleUpdateInquiryStatus = async (id: string, currentStatus: string) => {
@@ -193,14 +221,23 @@ const AdminDashboard = () => {
   };
 
   const handleDeleteInquiry = async (id: string) => {
-    if (window.confirm("Are you sure you want to permanently delete this inquiry? This action cannot be undone.")) {
-      try {
-        await axios.delete(`http://localhost:5000/api/inquiry/${id}`, { withCredentials: true });
-        setInquiries(prev => prev.filter(inq => inq._id !== id));
-      } catch (err) {
-        console.error('Failed to delete inquiry');
+    setConfirmConfig({
+      isOpen: true,
+      title: "Delete Inquiry?",
+      message: "Are you sure you want to permanently delete this inquiry? This action cannot be undone.",
+      isDestructive: true,
+      onConfirm: async () => {
+        try {
+          await axios.delete(`http://localhost:5000/api/inquiry/${id}`, { withCredentials: true });
+          setInquiries(prev => prev.filter(inq => inq._id !== id));
+          toast.success("Inquiry deleted");
+        } catch (err) {
+          toast.error("Failed to delete inquiry");
+          console.error('Failed to delete inquiry');
+        }
+        closeConfirm();
       }
-    }
+    });
   };
 
   const handleBulkStatusUpdate = async (status: 'New' | 'Read') => {
@@ -220,19 +257,28 @@ const AdminDashboard = () => {
   };
 
   const handleBulkDelete = async () => {
-    if (window.confirm(`Are you sure you want to delete ${selectedInquiries.length} inquiries? This action cannot be undone.`)) {
-      try {
-        await axios.delete('http://localhost:5000/api/inquiry/bulk-delete', { 
-          data: { ids: selectedInquiries }, 
-          withCredentials: true 
-        });
-        
-        setInquiries(prev => prev.filter(inq => !selectedInquiries.includes(inq._id)));
-        setSelectedInquiries([]);
-      } catch (err) {
-        console.error('Failed to bulk delete inquiries');
+    setConfirmConfig({
+      isOpen: true,
+      title: `Delete ${selectedInquiries.length} Inquiries?`,
+      message: "This action will permanently remove all selected items. This cannot be undone.",
+      isDestructive: true,
+      onConfirm: async () => {
+        try {
+          await axios.delete('http://localhost:5000/api/inquiry/bulk-delete', { 
+            data: { ids: selectedInquiries }, 
+            withCredentials: true 
+          });
+          
+          setInquiries(prev => prev.filter(inq => !selectedInquiries.includes(inq._id)));
+          setSelectedInquiries([]);
+          toast.success("Selected inquiries deleted");
+        } catch (err) {
+          toast.error("Failed to delete inquiries");
+          console.error('Failed to bulk delete inquiries');
+        }
+        closeConfirm();
       }
-    }
+    });
   };
 
   const toggleSelectAll = () => {
@@ -280,6 +326,14 @@ const AdminDashboard = () => {
 
   return (
     <div className="w-full bg-slate-50 min-h-screen pt-32 pb-12 text-slate-900 selection:bg-edge-red/10">
+      <ConfirmationModal
+        isOpen={confirmConfig.isOpen}
+        title={confirmConfig.title}
+        message={confirmConfig.message}
+        onConfirm={confirmConfig.onConfirm}
+        onCancel={closeConfirm}
+        isDestructive={confirmConfig.isDestructive}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header Section */}

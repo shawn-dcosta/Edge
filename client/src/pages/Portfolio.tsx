@@ -159,7 +159,7 @@ const Portfolio = () => {
              <p className="text-xs uppercase tracking-widest font-black text-gray-400">Loading Vision</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-10 space-y-10">
             <AnimatePresence mode="popLayout">
               {filteredItems.map((item, idx) => (
                 <motion.div
@@ -169,7 +169,7 @@ const Portfolio = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.6, delay: idx * 0.05, ease: "circOut" }}
-                  className="group relative aspect-[4/5] overflow-hidden bg-edge-gray shadow-sm cursor-pointer"
+                  className="group relative overflow-hidden bg-edge-gray shadow-sm cursor-pointer break-inside-avoid mb-10"
                   onClick={() => {
                     setSelectedItem(item);
                     setCurrentImgIndex(0);

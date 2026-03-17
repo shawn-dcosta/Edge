@@ -44,7 +44,7 @@ export const updateInquiryStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    if (!['New', 'Read', 'Replied'].includes(status)) {
+    if (!['New', 'Read'].includes(status)) {
        return res.status(400).json({ message: 'Invalid status' });
     }
 
@@ -61,5 +61,43 @@ export const updateInquiryStatus = async (req, res) => {
     res.json(updatedInquiry);
   } catch (error) {
     res.status(500).json({ message: 'Error updating inquiry status' });
+  }
+};
+
+export const deleteInquiry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedInquiry = await Inquiry.findByIdAndDelete(id);
+    
+    if (!deletedInquiry) {
+      return res.status(404).json({ message: 'Inquiry not found' });
+    }
+    
+    res.json({ message: 'Inquiry deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting inquiry' });
+  }
+};
+
+export const bulkUpdateInquiryStatus = async (req, res) => {
+  try {
+    const { ids, status } = req.body;
+    if (!['New', 'Read'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+    await Inquiry.updateMany({ _id: { $in: ids } }, { $set: { status } });
+    res.json({ message: `Successfully updated ${ids.length} inquiries` });
+  } catch (error) {
+    res.status(500).json({ message: 'Error bulk updating inquiries' });
+  }
+};
+
+export const bulkDeleteInquiries = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    await Inquiry.deleteMany({ _id: { $in: ids } });
+    res.json({ message: `Successfully deleted ${ids.length} inquiries` });
+  } catch (error) {
+    res.status(500).json({ message: 'Error bulk deleting inquiries' });
   }
 };

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Trash2, Plus, Mail, Database, MessageSquare, Eye, Calendar, CheckCircle2, GripVertical, Star, Edit2 } from 'lucide-react';
+import { Trash2, Plus, Mail, Database, MessageSquare, Eye, Calendar, CheckCircle2, GripVertical, Star, Edit2, Search } from 'lucide-react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 
@@ -21,6 +21,7 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<'portfolio' | 'inquiries'>('portfolio');
   const [portfolio, setPortfolio] = useState<any[]>([]);
   const [inquiries, setInquiries] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // New Item Form State
   const [newItem, setNewItem] = useState({
@@ -503,7 +504,19 @@ const AdminDashboard = () => {
             >
               <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white">
                 <h3 className="font-black uppercase tracking-widest text-[11px] text-slate-900">Communication Logs</h3>
-                <span className="bg-edge-red/10 text-edge-red px-4 py-1.5 rounded-full text-[10px] font-black border border-edge-red/20">{inquiries.length} LOGS</span>
+                <div className="flex flex-col md:flex-row md:items-center gap-4">
+                  <div className="relative group/search">
+                    <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/search:text-edge-red transition-colors" />
+                    <input 
+                      type="text"
+                      placeholder="Search inquiries..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="bg-slate-50 border border-slate-100 rounded-full pl-10 pr-6 py-2 text-[10px] font-bold uppercase tracking-widest outline-none focus:border-edge-red/20 focus:bg-white transition-all w-full md:w-64"
+                    />
+                  </div>
+                  <span className="bg-edge-red/10 text-edge-red px-4 py-1.5 rounded-full text-[10px] font-black border border-edge-red/20">{inquiries.length} LOGS</span>
+                </div>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -517,10 +530,24 @@ const AdminDashboard = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
-                    {inquiries.length === 0 ? (
-                      <tr><td colSpan={5} className="p-24 text-center text-slate-300 uppercase font-black tracking-widest text-sm">Inbox is currently empty.</td></tr>
-                    ) : (
-                      inquiries.map((inq, index) => (
+                     {inquiries.filter(inq => 
+                       inq.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                       inq.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                       (inq.company && inq.company.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                       inq.message?.toLowerCase().includes(searchQuery.toLowerCase())
+                     ).length === 0 ? (
+                       <tr><td colSpan={5} className="p-24 text-center text-slate-300 uppercase font-black tracking-widest text-sm">
+                         {searchQuery ? `No matches found for "${searchQuery}"` : 'Inbox is currently empty.'}
+                       </td></tr>
+                     ) : (
+                       inquiries
+                         .filter(inq => 
+                           inq.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                           inq.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           (inq.company && inq.company.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                           inq.message?.toLowerCase().includes(searchQuery.toLowerCase())
+                         )
+                         .map((inq, index) => (
                         <motion.tr
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}

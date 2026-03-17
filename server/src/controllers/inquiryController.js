@@ -1,4 +1,5 @@
 import Inquiry from '../models/Inquiry.js';
+import { sendInquiryNotification } from '../utils/emailService.js';
 
 export const submitInquiry = async (req, res) => {
   try {
@@ -17,6 +18,12 @@ export const submitInquiry = async (req, res) => {
     });
 
     await newInquiry.save();
+    
+    // Trigger Email Notification (Non-blocking)
+    sendInquiryNotification({ name, email, phone, company, message }).catch(err => {
+      console.error('Failed to send background email notification:', err);
+    });
+
     res.status(201).json({ message: 'Inquiry submitted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error submitting inquiry', error });

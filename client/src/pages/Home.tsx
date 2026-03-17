@@ -84,7 +84,7 @@ const Home = () => {
       </section>
 
       {/* Marquee Section */}
-      <ClientMarquee />
+      {/* <ClientMarquee /> */}
 
       {/* Core Values Section */}
       <section className="py-32 bg-edge-white">
@@ -158,28 +158,26 @@ const Home = () => {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
-            <div>
-              <div className="text-5xl md:text-7xl font-black mb-2 text-edge-red">
-                <AnimatedCounter value={54} />+
-              </div>
-              <p className="text-gray-400 uppercase tracking-widest text-xs font-bold">Stores Managed</p>
-            </div>
-            <div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-12 text-center">
+            <div className="flex flex-col items-center">
               <div className="text-5xl md:text-7xl font-black mb-2">
                 <AnimatedCounter value={24} />
               </div>
               <p className="text-gray-400 uppercase tracking-widest text-xs font-bold">Cities Reached</p>
             </div>
-            <div>
-              <div className="text-5xl md:text-7xl font-black mb-2">
-                <AnimatedCounter value={15} />+
+            <div className="flex flex-col items-center">
+              <div className="text-5xl md:text-7xl font-black mb-2 flex items-center">
+                <span className="invisible select-none" aria-hidden="true">+</span>
+                <AnimatedCounter value={15} />
+                <span className="text-edge-white ml-1">+</span>
               </div>
               <p className="text-gray-400 uppercase tracking-widest text-xs font-bold">Years of Edge</p>
             </div>
-            <div>
-              <div className="text-5xl md:text-7xl font-black mb-2">
-                <AnimatedCounter value={500} />+
+            <div className="flex flex-col items-center">
+              <div className="text-5xl md:text-7xl font-black mb-2 flex items-center">
+                <span className="invisible select-none" aria-hidden="true">+</span>
+                <AnimatedCounter value={500} />
+                <span className="text-edge-white ml-1">+</span>
               </div>
               <p className="text-gray-400 uppercase tracking-widest text-xs font-bold">Events Executed</p>
             </div>

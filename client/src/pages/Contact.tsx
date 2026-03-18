@@ -26,7 +26,26 @@ const Contact = () => {
     e.preventDefault();
     setStatus('submitting');
     try {
-      await axios.post('https://edge-3b6w.onrender.com/api/inquiry', formData);
+      // 1. Save to MongoDB Backend
+      const dbPromise = axios.post('https://edge-3b6w.onrender.com/api/inquiry', formData);
+      
+      // 2. Send Email via EmailJS API (Direct HTTP)
+      const emailPromise = axios.post('https://api.emailjs.com/api/v1.0/email/send', {
+        service_id: 'service_4aepzit',
+        template_id: 'template_sziwyep',
+        user_id: '1mTxY41gpP_Ii3nUr',
+        template_params: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || 'Not provided',
+          company: formData.company || 'Not provided',
+          message: formData.message
+        }
+      });
+
+      // Wait for both to finish successfully
+      await Promise.all([dbPromise, emailPromise]);
+
       setStatus('success');
       toast.success("Inquiry sent successfully!");
       setFormData({ name: '', email: '', phone: '', company: '', message: '' });

@@ -14,10 +14,10 @@ router.get('/google', passport.authenticate('google', {
 
 // Google callback
 router.get('/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  passport.authenticate('google', { failureRedirect: 'https://edge-five-dun.vercel.app/' }),
   (req, res) => {
     // Successful authentication, redirect to admin.
-    res.redirect('http://localhost:5173/admin');
+    res.redirect('https://edge-five-dun.vercel.app/admin');
   }
 );
 

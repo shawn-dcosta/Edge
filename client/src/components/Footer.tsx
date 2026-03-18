@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Instagram, Facebook, Linkedin } from 'lucide-react';
-import logo from '../assets/Edge Logo (Without BG).png';
+import logo from '../assets/images/Edge Logo (Without BG).png';
 
 const Footer = () => {
   return (

@@ -654,10 +654,10 @@ const AdminDashboard = () => {
                       <span className="bg-slate-100 text-slate-500 px-4 py-1.5 rounded-full text-[10px] font-black border border-slate-200">{portfolio.length} ITEMS</span>
                     </div>
                   </div>
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto overflow-y-auto max-h-[700px] scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-slate-200 scrollbar-track-transparent hover:scrollbar-thumb-slate-300 transition-all relative">
                     <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="bg-slate-50 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-100">
+                      <thead className="sticky top-0 z-10 bg-slate-50 shadow-sm">
+                        <tr className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-100">
                           <th className="px-8 py-5 text-left">Preview</th>
                           <th className="px-4 py-5 text-left">Project Information</th>
                           <th className="px-4 py-5 text-left">Classification</th>
@@ -796,10 +796,10 @@ const AdminDashboard = () => {
                 )}
               </AnimatePresence>
 
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto overflow-y-auto max-h-[700px] scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-slate-200 scrollbar-track-transparent hover:scrollbar-thumb-slate-300 transition-all relative">
                 <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-slate-50 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-100">
+                  <thead className="sticky top-0 z-10 bg-slate-50 shadow-sm">
+                    <tr className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-100">
                       <th className="p-8 w-12">
                         <button 
                           onClick={toggleSelectAll}

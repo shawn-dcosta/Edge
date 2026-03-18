@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Trash2, Plus, Mail, Phone, Database, MessageSquare, Eye, Calendar, CheckCircle2, GripVertical, Star, Edit2, Search, CheckSquare, Square, XCircle, User, Building2, Clock } from 'lucide-react';
+import { Trash2, Plus, Mail, Phone, Database, MessageSquare, Eye, Calendar, CheckCircle2, GripVertical, Star, Edit2, Search, CheckSquare, Square, XCircle, User, Building2, Clock, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
@@ -53,6 +53,8 @@ const AdminDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedInquiries, setSelectedInquiries] = useState<string[]>([]);
   const [viewingInquiry, setViewingInquiry] = useState<Inquiry | null>(null);
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+  const categoryDropdownRef = useRef<HTMLDivElement>(null);
 
   // New Item Form State
   const [newItem, setNewItem] = useState({
@@ -88,6 +90,16 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchData();
   }, [activeTab]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(e.target as Node)) {
+        setCategoryDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleUpload = () => {
     const widget = window.cloudinary.createUploadWidget(
@@ -419,15 +431,60 @@ const AdminDashboard = () => {
                       />
                     </div>
 
-                    <div className="group">
-                      <label className="block text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-2 group-focus-within:text-edge-red transition-colors">Service Category</label>
-                      <select 
-                        value={newItem.category} 
-                        onChange={e => setNewItem({...newItem, category: e.target.value})} 
-                        className="w-full bg-slate-50 p-4 outline-none border border-slate-100 rounded-2xl focus:border-edge-red/30 focus:bg-white transition-all text-sm font-bold text-edge-black appearance-none cursor-pointer"
-                      >
-                        {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                      </select>
+                    <div className="group" ref={categoryDropdownRef}>
+                      <label className="block text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase mb-2 transition-colors" style={{ color: categoryDropdownOpen ? 'var(--color-edge-red, #D31212)' : undefined }}>Service Category</label>
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setCategoryDropdownOpen(prev => !prev)}
+                          className={`w-full bg-slate-50 p-4 outline-none border rounded-2xl transition-all text-sm font-bold text-edge-black flex items-center justify-between cursor-pointer hover:bg-white ${
+                            categoryDropdownOpen ? 'border-edge-red/40 bg-white shadow-sm shadow-edge-red/10' : 'border-slate-100 hover:border-edge-red/20'
+                          }`}
+                        >
+                          <span>{newItem.category}</span>
+                          <ChevronDown
+                            size={16}
+                            className={`transition-all duration-300 ${
+                              categoryDropdownOpen ? 'rotate-180 text-edge-red' : 'text-slate-300'
+                            }`}
+                          />
+                        </button>
+
+                        <AnimatePresence>
+                          {categoryDropdownOpen && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                              transition={{ duration: 0.15, ease: 'easeOut' }}
+                              className="absolute z-50 left-0 right-0 top-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-2xl shadow-slate-200/80 overflow-hidden"
+                            >
+                              <div className="max-h-64 overflow-y-auto py-2">
+                                {CATEGORIES.map((c) => (
+                                  <button
+                                    key={c}
+                                    type="button"
+                                    onClick={() => {
+                                      setNewItem({ ...newItem, category: c });
+                                      setCategoryDropdownOpen(false);
+                                    }}
+                                    className={`w-full text-left px-5 py-3 text-[11px] font-black uppercase tracking-wider transition-all flex items-center gap-3 ${
+                                      newItem.category === c
+                                        ? 'text-edge-red bg-edge-red/5'
+                                        : 'text-slate-500 hover:text-edge-black hover:bg-slate-50'
+                                    }`}
+                                  >
+                                    <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-colors ${
+                                      newItem.category === c ? 'bg-edge-red' : 'bg-slate-200'
+                                    }`} />
+                                    {c}
+                                  </button>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
                     </div>
 
                     <div className="group">

@@ -90,7 +90,7 @@ const Contact = () => {
                 <div className="aspect-[4/5] bg-edge-gray overflow-hidden border-l border-t border-edge-red">
                   <img src={profileImage} alt="Director" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100" />
                 </div>
-                <div className="absolute -bottom-6 -right-6 bg-edge-black p-8 text-edge-white shadow-2xl">
+                <div className="absolute -bottom-6 right-0 bg-edge-black p-8 text-edge-white shadow-2xl">
                   <p className="italic font-light text-lg mb-4">"We don't just build stages; we build partnerships."</p>
                   <p className="text-edge-red font-bold uppercase tracking-widest text-xs">— Savio D'Costa</p>
                 </div>

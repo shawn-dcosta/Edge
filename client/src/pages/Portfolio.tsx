@@ -15,7 +15,8 @@ const CATEGORIES = [
   'Retail Merchandising', 
   'Weddings', 
   'Televised Events',
-  'Mall Activity'
+  'Mall Activity',
+  'Others'
 ];
 
 interface PortfolioItem {

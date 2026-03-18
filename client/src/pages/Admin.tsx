@@ -9,7 +9,7 @@ import ConfirmationModal from '../components/ConfirmationModal';
 const CATEGORIES = [
   'Award Functions', 'Exhibitions', 'Corporate Events',
   'Conferences', 'Retail Merchandising', 'Weddings',
-  'Televised Events', 'Mall Activity'
+  'Televised Events', 'Mall Activity', 'Others'
 ];
 
 declare global {

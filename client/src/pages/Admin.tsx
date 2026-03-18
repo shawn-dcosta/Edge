@@ -160,10 +160,10 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     try {
       if (activeTab === 'portfolio') {
-        const res = await axios.get('http://localhost:5000/api/portfolio', { withCredentials: true });
+        const res = await axios.get('https://edge-3b6w.onrender.com/api/portfolio', { withCredentials: true });
         setPortfolio(res.data);
       } else {
-        const res = await axios.get('http://localhost:5000/api/inquiry', { withCredentials: true });
+        const res = await axios.get('https://edge-3b6w.onrender.com/api/inquiry', { withCredentials: true });
         setInquiries(res.data);
       }
     } catch (err) {
@@ -184,10 +184,10 @@ const AdminDashboard = () => {
       console.log('Sending request to server...');
       
       if (isEditing && editingId) {
-        await axios.put(`http://localhost:5000/api/portfolio/${editingId}`, newItem, { withCredentials: true });
+        await axios.put(`https://edge-3b6w.onrender.com/api/portfolio/${editingId}`, newItem, { withCredentials: true });
         toast.success("Item updated successfully!");
       } else {
-        await axios.post('http://localhost:5000/api/portfolio', newItem, { withCredentials: true });
+        await axios.post('https://edge-3b6w.onrender.com/api/portfolio', newItem, { withCredentials: true });
         toast.success("Item published successfully!");
       }
 
@@ -209,7 +209,7 @@ const AdminDashboard = () => {
       isDestructive: true,
       onConfirm: async () => {
         try {
-          await axios.delete(`http://localhost:5000/api/portfolio/${id}`, { withCredentials: true });
+          await axios.delete(`https://edge-3b6w.onrender.com/api/portfolio/${id}`, { withCredentials: true });
           toast.success("Project removed successfully");
           fetchData();
         } catch (err) {
@@ -224,7 +224,7 @@ const AdminDashboard = () => {
   const handleUpdateInquiryStatus = async (id: string, currentStatus: string) => {
     const newStatus = currentStatus === 'New' ? 'Read' : 'New';
     try {
-      await axios.put(`http://localhost:5000/api/inquiry/${id}/status`, { status: newStatus }, { withCredentials: true });
+      await axios.put(`https://edge-3b6w.onrender.com/api/inquiry/${id}/status`, { status: newStatus }, { withCredentials: true });
       // Optimized state update instead of refetch
       setInquiries(prev => prev.map(inq => inq._id === id ? { ...inq, status: newStatus } : inq));
     } catch (err) {
@@ -240,7 +240,7 @@ const AdminDashboard = () => {
       isDestructive: true,
       onConfirm: async () => {
         try {
-          await axios.delete(`http://localhost:5000/api/inquiry/${id}`, { withCredentials: true });
+          await axios.delete(`https://edge-3b6w.onrender.com/api/inquiry/${id}`, { withCredentials: true });
           setInquiries(prev => prev.filter(inq => inq._id !== id));
           toast.success("Inquiry deleted");
         } catch (err) {
@@ -254,7 +254,7 @@ const AdminDashboard = () => {
 
   const handleBulkStatusUpdate = async (status: 'New' | 'Read') => {
     try {
-      await axios.patch('http://localhost:5000/api/inquiry/bulk-status', { 
+      await axios.patch('https://edge-3b6w.onrender.com/api/inquiry/bulk-status', { 
         ids: selectedInquiries, 
         status 
       }, { withCredentials: true });
@@ -276,7 +276,7 @@ const AdminDashboard = () => {
       isDestructive: true,
       onConfirm: async () => {
         try {
-          await axios.delete('http://localhost:5000/api/inquiry/bulk-delete', { 
+          await axios.delete('https://edge-3b6w.onrender.com/api/inquiry/bulk-delete', { 
             data: { ids: selectedInquiries }, 
             withCredentials: true 
           });

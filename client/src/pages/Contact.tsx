@@ -26,7 +26,7 @@ const Contact = () => {
     e.preventDefault();
     setStatus('submitting');
     try {
-      await axios.post('http://localhost:5000/api/inquiry', formData);
+      await axios.post('https://edge-3b6w.onrender.com/api/inquiry', formData);
       setStatus('success');
       toast.success("Inquiry sent successfully!");
       setFormData({ name: '', email: '', phone: '', company: '', message: '' });

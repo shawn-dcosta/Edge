@@ -28,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/auth/me', { withCredentials: true });
+        const res = await axios.get('https://edge-3b6w.onrender.com/api/auth/me', { withCredentials: true });
         setUser(res.data);
       } catch (err) {
         setUser(null);
@@ -40,12 +40,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = () => {
-    window.location.href = 'http://localhost:5000/api/auth/google';
+    window.location.href = 'https://edge-3b6w.onrender.com/api/auth/google';
   };
 
   const loginWithEmail = async (data: any) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', data, { withCredentials: true });
+      const res = await axios.post('https://edge-3b6w.onrender.com/api/auth/login', data, { withCredentials: true });
       setUser(res.data);
     } catch (err: any) {
       throw new Error(err.response?.data?.message || 'Login failed');
@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = async (data: any) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', data, { withCredentials: true });
+      const res = await axios.post('https://edge-3b6w.onrender.com/api/auth/register', data, { withCredentials: true });
       setUser(res.data);
     } catch (err: any) {
       throw new Error(err.response?.data?.message || 'Registration failed');
@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await axios.get('http://localhost:5000/api/auth/logout', { withCredentials: true });
+      await axios.get('https://edge-3b6w.onrender.com/api/auth/logout', { withCredentials: true });
       setUser(null);
       window.location.href = '/';
     } catch (err) {

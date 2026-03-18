@@ -42,7 +42,7 @@ const Portfolio = () => {
   useEffect(() => {
     const fetchPortfolio = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/portfolio');
+        const res = await axios.get('https://edge-3b6w.onrender.com/api/portfolio');
         setItems(res.data || []);
       } catch (error) {
         console.error('Failed to fetch portfolio', error);

@@ -17,7 +17,7 @@ const PortfolioItemSchema = new mongoose.Schema({
       'Weddings', 
       'Televised Events',
       'Mall Activity',
-      'Other'
+      'Others'
     ]
   },
   imageUrl: {

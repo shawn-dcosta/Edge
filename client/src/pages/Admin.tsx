@@ -550,8 +550,12 @@ const AdminDashboard = () => {
                                           {idx + 1}
                                         </span>
 
-                                        <div className="w-16 h-11 rounded-lg overflow-hidden border border-slate-100 bg-slate-50 flex-shrink-0 ml-2">
-                                          <img src={url} className="w-full h-full object-cover" />
+                                        <div className="w-16 h-11 rounded-lg overflow-hidden border border-slate-100 bg-black flex-shrink-0 ml-2">
+                                          {(url.match(/\.(mp4|webm|mov|mkv)$/i) || url.includes('/video/upload/')) ? (
+                                            <video src={url} className="w-full h-full object-cover" muted playsInline />
+                                          ) : (
+                                            <img src={url} className="w-full h-full object-cover" />
+                                          )}
                                         </div>
 
                                         <div className="flex-grow flex items-center justify-end ml-4">
@@ -673,8 +677,12 @@ const AdminDashboard = () => {
                               className="group hover:bg-slate-50/50 transition-colors"
                             >
                               <td className="px-8 py-6">
-                                <div className="w-24 h-16 rounded-xl overflow-hidden border border-slate-100 shadow-sm transition-transform duration-500 group-hover:scale-105">
-                                  <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                                <div className="w-24 h-16 rounded-xl overflow-hidden border border-slate-100 shadow-sm transition-transform duration-500 group-hover:scale-105 bg-black">
+                                  {(item.imageUrl.match(/\.(mp4|webm|mov|mkv)$/i) || item.imageUrl.includes('/video/upload/')) ? (
+                                    <video src={item.imageUrl} className="w-full h-full object-cover" muted playsInline />
+                                  ) : (
+                                    <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                                  )}
                                 </div>
                               </td>
                               <td className="px-4 py-6">
@@ -1044,7 +1052,11 @@ const AdminDashboard = () => {
               className="relative max-w-5xl w-full aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl"
               onClick={e => e.stopPropagation()}
             >
-              <img src={previewImage} className="w-full h-full object-contain" />
+              {(previewImage.match(/\.(mp4|webm|mov|mkv)$/i) || previewImage.includes('/video/upload/')) ? (
+                <video src={previewImage} controls autoPlay className="w-full h-full object-contain" />
+              ) : (
+                <img src={previewImage} className="w-full h-full object-contain" />
+              )}
               <button 
                 onClick={() => setPreviewImage(null)}
                 className="absolute top-6 right-6 w-12 h-12 bg-white/10 hover:bg-white backdrop-blur-md rounded-full flex items-center justify-center text-edge-red transition-all shadow-xl active:scale-90"

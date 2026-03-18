@@ -178,11 +178,15 @@ const Portfolio = () => {
                   }}
                 >
                   {/* The Image (Threshold Admin Image) */}
-                  <img 
-                    src={item.imageUrl} 
-                    alt={item.title} 
-                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 group-hover:rotate-1"
-                  />
+                  {(item.imageUrl.match(/\.(mp4|webm|mov|mkv)$/i) || item.imageUrl.includes('/video/upload/')) ? (
+                    <video src={item.imageUrl} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 group-hover:rotate-1" muted playsInline autoPlay loop />
+                  ) : (
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.title} 
+                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 group-hover:rotate-1"
+                    />
+                  )}
                   
                   {/* Stage Veil Overlay (Curtain Reveal) */}
                   <div className="absolute inset-x-0 bottom-0 h-0 bg-edge-black transition-all duration-500 ease-in-out group-hover:h-full group-hover:bg-edge-black/90 pointer-events-none flex flex-col justify-end p-10">
@@ -282,20 +286,38 @@ const Portfolio = () => {
                   {/* The Current Image */}
                   <div className="relative w-full h-full flex items-center justify-center p-4 md:p-10 overflow-hidden text-center">
                     <AnimatePresence initial={false} custom={direction} mode="popLayout">
-                      <motion.img
-                        key={currentImgIndex}
-                        src={selectedItem.images ? selectedItem.images[currentImgIndex] : selectedItem.imageUrl}
-                        custom={direction}
-                        variants={slideVariants}
-                        initial="enter"
-                        animate="center"
-                        exit="exit"
-                        transition={{
-                          x: { type: "spring", stiffness: 450, damping: 45, mass: 1 },
-                          opacity: { duration: 0.15 }
-                        }}
-                        className="max-w-full max-h-full object-contain shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)]"
-                      />
+                      {(() => {
+                        const currentMediaUrl = selectedItem.images ? selectedItem.images[currentImgIndex] : selectedItem.imageUrl;
+                        const isVideo = currentMediaUrl.match(/\.(mp4|webm|mov|mkv)$/i) || currentMediaUrl.includes('/video/upload/');
+                        
+                        return isVideo ? (
+                          <motion.video
+                            key={`video-${currentImgIndex}`}
+                            src={currentMediaUrl}
+                            controls
+                            autoPlay
+                            custom={direction}
+                            variants={slideVariants}
+                            initial="enter"
+                            animate="center"
+                            exit="exit"
+                            transition={{ x: { type: "spring", stiffness: 450, damping: 45, mass: 1 }, opacity: { duration: 0.15 } }}
+                            className="max-w-full max-h-full object-contain shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)]"
+                          />
+                        ) : (
+                          <motion.img
+                            key={`img-${currentImgIndex}`}
+                            src={currentMediaUrl}
+                            custom={direction}
+                            variants={slideVariants}
+                            initial="enter"
+                            animate="center"
+                            exit="exit"
+                            transition={{ x: { type: "spring", stiffness: 450, damping: 45, mass: 1 }, opacity: { duration: 0.15 } }}
+                            className="max-w-full max-h-full object-contain shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)]"
+                          />
+                        );
+                      })()}
                     </AnimatePresence>
                   </div>
 
